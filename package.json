@@ -15,9 +15,11 @@
     "strapi-connector-mongoose": "3.5.3",
     "strapi-plugin-content-manager": "3.5.3",
     "strapi-plugin-content-type-builder": "3.5.3",
+    "strapi-plugin-documentation": "^3.5.3",
     "strapi-plugin-email": "3.5.3",
     "strapi-plugin-upload": "3.5.3",
     "strapi-plugin-users-permissions": "3.5.3",
+    "strapi-provider-upload-cloudinary": "^3.5.3",
     "strapi-utils": "3.5.3"
   },
   "author": {
@@ -30,5 +32,8 @@
     "node": ">=10.16.0 <=14.x.x",
     "npm": "^6.0.0"
   },
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "babel-eslint": "^10.1.0"
+  }
 }
