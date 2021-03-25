@@ -68,6 +68,7 @@ header button span {
 }
 
 main {
+    min-height: 100vh;
     display: grid;
     grid-row-gap: 0px;
     grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
