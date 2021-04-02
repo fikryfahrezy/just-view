@@ -67,18 +67,22 @@ header button span {
     margin-left: 10px;
 }
 
-main {
-    min-height: 100vh;
-    display: grid;
-    grid-row-gap: 0px;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-    grid-auto-rows: 20px;
+.grid:after {
+    content: '';
+    display: block;
+    clear: both;
 }
 
-.item {
-    background-color: #ffffff;
+.grid-sizer,
+.grid-item {
+    width: 33.333%;
 }
 
-.photothumb {
-    width: 100%;
+.grid-item {
+    float: left;
+}
+
+.grid-item img {
+    display: block;
+    max-width: 100%;
 }

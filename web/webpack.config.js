@@ -7,6 +7,7 @@ module.exports = {
     devServer: {
         contentBase: './src',
         hot: true,
+        host: '0.0.0.0',
     },
     entry: './src/index.js',
     module: {
