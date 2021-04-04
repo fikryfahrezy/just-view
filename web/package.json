@@ -18,8 +18,7 @@
     },
     "keywords": [],
     "dependencies": {
-        "imagesloaded": "^4.1.4",
-        "lazysizes": "^5.3.2",
-        "masonry-layout": "^4.2.2"
+        "isotope-layout": "^3.0.6",
+        "lazysizes": "^5.3.2"
     }
 }
