@@ -3,9 +3,9 @@ const path = require('path');
 
 module.exports = {
     mode: 'development',
-    devtool: 'inline-source-map',
+    devtool: 'eval-cheap-module-source-map',
     devServer: {
-        contentBase: './src',
+        contentBase: './dist',
         hot: true,
         host: '0.0.0.0',
     },
@@ -20,6 +20,10 @@ module.exports = {
                 test: /\.css$/,
                 use: ['style-loader', 'css-loader'],
             },
+            {
+                test: /\.(png|svg|jpg|jpeg|gif)$/i,
+                type: 'asset/resource',
+            },
         ],
     },
     plugins: [
@@ -28,7 +32,8 @@ module.exports = {
         }),
     ],
     output: {
-        filename: 'index.js',
+        filename: '[name].[contenthash].js',
         path: path.resolve(__dirname, 'dist'),
+        clean: true,
     },
 };

@@ -2,12 +2,13 @@
     -moz-osx-font-smoothing: grayscale;
     -webkit-font-smoothing: antialiased;
     display: inline-block;
+    font-family: 'Font Awesome 5 Free';
     font-style: normal;
     font-variant: normal;
-    text-rendering: auto;
-    line-height: 1;
-    font-family: 'Font Awesome 5 Free';
     font-weight: 900;
+    font-display: optional;
+    line-height: 1;
+    text-rendering: auto;
 }
 
 .fa-map-marker-alt:before {
