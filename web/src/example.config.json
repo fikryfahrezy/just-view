@@ -1,3 +1,6 @@
 {
-    "serverUrl": ""
+  "serverUrl": "",
+  "wThumbnail": "",
+  "mThumbnail": "",
+  "musics": [""]
 }

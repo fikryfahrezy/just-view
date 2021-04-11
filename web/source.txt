@@ -1,2 +1,18 @@
 Prevent Page Scrolling When a Modal is Open
 https://css-tricks.com/prevent-page-scrolling-when-a-modal-is-open/
+
+What is the best way to detect a mobile device?
+https://stackoverflow.com/questions/3514784/what-is-the-best-way-to-detect-a-mobile-device
+
+Cache related refrences
+https://googlechrome.github.io/samples/service-worker/window-caches/
+https://developer.mozilla.org/en-US/docs/Web/API/CacheStorage
+https://developer.mozilla.org/en-US/docs/Web/API/Cache
+https://web.dev/cache-api-quick-guide/
+https://gist.github.com/hscstudio/3f2046acfa31a4211c175c790468c7ee
+
+URL.createObjectURL()
+https://developer.mozilla.org/en-US/docs/Web/API/URL/createObjectURL
+
+FileReader 
+https://developer.mozilla.org/en-US/docs/Web/API/FileReader
