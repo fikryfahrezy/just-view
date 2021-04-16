@@ -1,206 +1,272 @@
+@import url("https://fonts.googleapis.com/css2?family=Open+Sans:wght@300&family=Roboto:wght@400;700;900&display=swap");
+
 .fas {
-    -moz-osx-font-smoothing: grayscale;
-    -webkit-font-smoothing: antialiased;
-    display: inline-block;
-    font-family: 'Font Awesome 5 Free';
-    font-style: normal;
-    font-variant: normal;
-    font-weight: 900;
-    font-display: optional;
-    line-height: 1;
-    text-rendering: auto;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-font-smoothing: antialiased;
+  display: inline-block;
+  font-family: "Font Awesome 5 Free";
+  font-style: normal;
+  font-variant: normal;
+  font-weight: 900;
+  font-display: optional;
+  line-height: 1;
+  text-rendering: auto;
 }
 
 .fa-map-marker-alt:before {
-    content: '\f3c5';
+  content: "\f3c5";
+}
+
+.fa-pause:before {
+  content: "\f04c";
+}
+
+.fa-play:before {
+  content: "\f04b";
 }
 
 * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: 'Roboto', sans-serif;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Roboto", sans-serif;
 }
 
 .snap-container {
-    /*width: 100vw;*/
-    /*height: 100vh;*/
-    /*position: relative;*/
-    /*overflow-y: scroll;*/
-    /*scroll-snap-type: y mandatory;*/
-    /*scroll-behavior: smooth;*/
+  /*width: 100vw;*/
+  /*height: 100vh;*/
+  /*position: relative;*/
+  /*overflow-y: scroll;*/
+  /*scroll-snap-type: y mandatory;*/
+  /*scroll-behavior: smooth;*/
 }
 
 .snap-container > * {
-    /*scroll-snap-align: start;*/
+  /*scroll-snap-align: start;*/
 }
 
 header {
-    height: 100vh;
-    width: 100%;
+  height: 100vh;
+  width: 100%;
 }
 
 header img {
-    height: 100%;
-    width: 100%;
-    object-fit: cover;
+  height: 100%;
+  width: 100%;
+  object-fit: cover;
 }
 
-header div {
-    position: absolute;
-    display: flex;
-    width: fit-content;
-    color: #fff;
-    flex-direction: column;
-    align-items: center;
-    left: 50%;
-    bottom: 0;
-    transform: translate(-50%, -30%);
+header > div {
+  position: absolute;
+  display: flex;
+  width: fit-content;
+  color: #fff;
+  flex-direction: column;
+  align-items: center;
+  left: 50%;
+  bottom: 0;
+  transform: translate(-50%, -30%);
 }
 
-header div h1 {
-    font-size: clamp(2rem, 5vw, 5rem);
-    font-weight: bold;
+header > div h1 {
+  font-size: clamp(2rem, 5vw, 5rem);
+  font-weight: bold;
 }
 
-header div p {
-    font-size: clamp(1rem, 1.8vh, 2rem);
-    font-weight: 400;
-    margin: 25px 0;
+header > div p {
+  font-size: clamp(1rem, 1.8vh, 2rem);
+  font-weight: 400;
+  margin: 25px 0;
 }
 
 header button {
-    width: 150px;
-    height: 50px;
-    font-size: 24px;
-    color: #fff;
-    background-color: transparent;
-    border: 2px solid #fff;
-    border-radius: 25px;
-    cursor: pointer;
+  width: 150px;
+  height: 50px;
+  font-size: 24px;
+  color: #fff;
+  background-color: transparent;
+  border: 2px solid #fff;
+  border-radius: 25px;
+  cursor: pointer;
 }
 
 header button span {
-    margin-left: 10px;
+  margin-left: 10px;
 }
 
 main {
-    margin-bottom: 25px;
+  min-height: 100vh;
+  margin-bottom: 25px;
+}
+
+#audio-container {
+  position: fixed;
+  width: 75px;
+  height: 75px;
+  bottom: 40px;
+  right: 40px;
+  border-radius: 100%;
+  box-shadow: 2px 2px 3px #999;
+}
+
+.audio-controller .percent {
+  position: relative;
+  display: grid;
+  place-items: center;
+}
+
+.hide-container {
+  visibility: hidden;
+}
+
+.audio-controller .percent svg circle {
+  fill: none;
+  stroke: #000;
+  stroke-width: 10;
+  cursor: pointer;
+}
+
+.audio-controller .percent svg circle:nth-child(1) {
+  stroke: #c8c8c8;
+  stroke-dashoffset: 0;
+}
+
+#progress {
+  transition: stroke-dashoffset 0.35s;
+  transform: rotate(-90deg);
+  transform-origin: 50% 50%;
+}
+
+.audio-controller .percent button {
+  position: absolute;
+  width: 85%;
+  height: 85%;
+  border: none;
+  border-radius: 100%;
+  font-size: clamp(1rem, 1.8vh, 2rem);
+  cursor: pointer;
+}
+
+.progress-ring__circle {
+  transition: 0.35s stroke-dashoffset;
+  /* axis compensation */
+  transform: rotate(-90deg);
+  transform-origin: 50% 50%;
 }
 
 .mediabox {
-    position: relative;
-    display: block;
+  position: relative;
+  display: block;
 }
 
 .mediabox-img.ls-blur-up-is-loading,
 .mediabox-img.lazyload:not([src]) {
-    visibility: hidden;
+  visibility: hidden;
 }
 
 .ls-blur-up-img,
 .mediabox-img {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
 
-    /* only if you want to change the blur-up option from always to auto or want to use blur up effect without a lowsrc image. */
-    font-family: 'blur-up: auto', 'object-fit: cover';
-    object-fit: cover;
+  /* only if you want to change the blur-up option from always to auto or want to use blur up effect without a lowsrc image. */
+  font-family: "blur-up: auto", "object-fit: cover";
+  object-fit: cover;
 }
 
 .ls-blur-up-img {
-    filter: blur(10px);
-    opacity: 1;
-    transition: opacity 1000ms, filter 1500ms;
+  filter: blur(10px);
+  opacity: 1;
+  transition: opacity 1000ms, filter 1500ms;
 }
 
 .ls-blur-up-img.ls-inview.ls-original-loaded {
-    opacity: 0;
-    filter: blur(5px);
+  opacity: 0;
+  filter: blur(5px);
 }
 
 .grid {
-    width: 70%;
-    margin: 0 auto;
+  width: 70%;
+  margin: 0 auto;
 }
 
 /* clear fix */
 .grid:after {
-    content: '';
-    display: block;
-    clear: both;
+  content: "";
+  display: block;
+  clear: both;
 }
 
 /* ---- .grid-item ---- */
 .grid-sizer,
 .grid-item {
-    width: 24%;
-    margin: 0 0.5% 1%;
+  width: 24%;
+  margin: 0 0.5% 1%;
 }
 
 .grid-item .img {
-    display: block;
-    max-width: 100%;
-    height: auto;
-    cursor: pointer;
+  display: block;
+  max-width: 100%;
+  height: auto;
+  cursor: pointer;
 }
 
 .grid-modal {
-    width: 99% !important;
-    display: grid;
-    place-items: center;
-    left: 0%;
+  width: 99% !important;
+  display: grid;
+  place-items: center;
+  left: 0%;
 }
 
 .modal {
-    width: 100%;
+  width: 100%;
 }
 
 .modal p {
-    margin-top: 5px;
+  margin-top: 5px;
 }
 
 .modal a {
-    color: black;
-    text-decoration: underline;
+  color: black;
+  text-decoration: underline;
 }
 
 .modal button {
-    color: #fff;
-    background-color: #000;
-    padding: 5px 10px;
-    margin-top: 15px;
-    border: 0;
-    border-radius: 3px;
-    font-size: clamp(1rem, 1.8vh, 2rem);
-    cursor: pointer;
+  color: #fff;
+  background-color: #000;
+  padding: 5px 10px;
+  margin-top: 15px;
+  border: 0;
+  border-radius: 3px;
+  font-size: clamp(1rem, 1.8vh, 2rem);
+  cursor: pointer;
 }
 
 .modal i {
-    margin-right: 10px;
+  margin-right: 10px;
 }
 
 @media (max-width: 1366px) {
-    .grid {
-        width: 100%;
-    }
+  .grid {
+    width: 100%;
+  }
 }
 
 @media (max-width: 768px) {
-    .grid-sizer,
-    .grid-item {
-        width: 49%;
-    }
+  .grid-sizer,
+  .grid-item {
+    width: 49%;
+  }
 }
 
 @media (max-width: 540px) {
-    header button {
-        width: 100px;
-        height: 35px;
-        font-size: clamp(1rem, 1.8vh, 2rem);
-    }
+  header button {
+    width: 100px;
+    height: 35px;
+    font-size: clamp(1rem, 1.8vh, 2rem);
+  }
 }

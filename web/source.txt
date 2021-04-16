@@ -16,3 +16,6 @@ https://developer.mozilla.org/en-US/docs/Web/API/URL/createObjectURL
 
 FileReader 
 https://developer.mozilla.org/en-US/docs/Web/API/FileReader
+
+Building a Progress Ring, Quickly
+https://css-tricks.com/building-progress-ring-quickly

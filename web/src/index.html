@@ -1,44 +1,53 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <title>Just View</title>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <meta name="theme-color" content="#ffffff" />
-        <meta
-            name="Description"
-            content="Take a look at a lot of relaxing images to relax your soul."
-        />
-        <link rel="preconnect" href="https://fonts.gstatic.com" />
-        <link
-            href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap"
-            rel="stylesheet"
-        />
-        <link
-            rel="stylesheet"
-            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/solid.min.css"
-            integrity="sha512-jQqzj2vHVxA/yCojT8pVZjKGOe9UmoYvnOuM/2sQ110vxiajBU+4WkyRs1ODMmd4AfntwUEV4J+VfM6DkfjLRg=="
-            crossorigin="anonymous"
-        />
-    </head>
+  <head>
+    <title>Just View</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#ffffff" />
+    <meta
+      name="Description"
+      content="Take a look at a lot of relaxing images to relax your soul."
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/solid.min.css"
+      integrity="sha512-jQqzj2vHVxA/yCojT8pVZjKGOe9UmoYvnOuM/2sQ110vxiajBU+4WkyRs1ODMmd4AfntwUEV4J+VfM6DkfjLRg=="
+      crossorigin="anonymous"
+    />
+    <link rel="stylesheet" href="./src/styles.css" />
+    <script src="./src/index.js" defer></script>
+  </head>
 
-    <body>
-        <div id="snap-container" class="snap-container">
-            <header class="thumbnail">
-                <div>
-                    <h1>Just View</h1>
-                    <p>View this images to refresh yourelf.</p>
-                    <button class="scroll-button">
-                        Enjoy <span>&darr;</span>
-                    </button>
-                </div>
-            </header>
-            <main>
-                <div class="grid">
-                    <div class="grid-sizer"></div>
-                </div>
-                <span id="load-more"></span>
-            </main>
+  <body>
+    <div class="snap-container">
+      <header id="thumbnail" class="thumbnail">
+        <div>
+          <h1>Just View</h1>
+          <p>View this images to refresh yourelf.</p>
+          <button id="scroll-button" class="scroll-button">
+            Enjoy <span>&darr;</span>
+          </button>
         </div>
-    </body>
+      </header>
+      <main>
+        <span id="main"></span>
+        <div id="grid" class="grid">
+          <div class="grid-sizer"></div>
+        </div>
+        <div id="audio-container" class="hide-container">
+          <audio id="audio"></audio>
+          <div class="audio-controller">
+            <div id="percent-contoller" class="percent">
+              <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="50" cy="50" r="45" />
+                <circle id="progress" cx="50" cy="50" r="45" />
+              </svg>
+            </div>
+          </div>
+        </div>
+        <span id="load-more"></span>
+      </main>
+    </div>
+  </body>
 </html>

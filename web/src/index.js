@@ -14,41 +14,23 @@ const isMobile = /Android|webOS|iPhone|iPod|BlackBerry|IEMobile/i.test(
   navigator.userAgent
 );
 const serverUrl = config.serverUrl || "...";
-const grid = document.querySelector(".grid");
-const scrollButton = document.querySelector(".scroll-button");
+const grid = document.getElementById("grid");
+const scrollButton = document.getElementById("scroll-button");
 const loadMore = document.getElementById("load-more");
-const thumbnail = document.querySelector(".thumbnail");
-const isCache = 'caches' in window;
+const thumbnail = document.getElementById("thumbnail");
+const main = document.getElementById("main");
+const audioContainer = document.getElementById("audio-container");
+const audio = document.getElementById("audio");
+const circle = document.getElementById("progress");
+const percentController = document.getElementById("percent-contoller");
+const isCacheAvailable = "caches" in window;
 let observer = null;
 let iso = null;
 let isFetching = false;
 let viewsCount = 0;
 let loadedViews = 0;
+let musicStartIndex = 0;
 let musicList = [];
-
-const itemComponent = function itemComponent({ main, detail }) {
-  const { url, thumbnail, height, width, name } = main;
-
-  const item = document.createElement("div");
-  item.classList.add("grid-item");
-  item.dataset.obj = JSON.stringify(detail);
-
-  const mediaBox = document.createElement("div");
-  item.appendChild(mediaBox);
-  mediaBox.classList.add("mediabox");
-
-  const img = document.createElement("img");
-  mediaBox.appendChild(img);
-  img.classList.add("media-box", "lazyload", "img");
-  img.dataset.sizes = "auto";
-  img.dataset.lowsrc = thumbnail;
-  img.dataset.src = url;
-  img.width = width;
-  img.height = height;
-  img.alt = name;
-
-  return item;
-};
 
 const modalAnchorComponent = function modalAnchorComponent(link) {
   const anchor = document.createElement("a");
@@ -92,21 +74,96 @@ const modalComponent = function modalComponent(data) {
   return descDiv;
 };
 
-const audioComponent = function audioComponent(srcBlob) {
-  const audio = new Audio();
-  document.body.appendChild(audio);
+const itemComponent = function itemComponent(data) {
+  const { main, detail } = data;
+  const { url, thumbnail, height, width, name } = main;
 
+  const item = document.createElement("div");
+  item.classList.add("grid-item");
+
+  const mediaBox = document.createElement("div");
+  item.appendChild(mediaBox);
+  mediaBox.classList.add("mediabox");
+
+  const img = document.createElement("img");
+  mediaBox.appendChild(img);
+  img.classList.add("media-box", "lazyload", "img");
+  img.dataset.sizes = "auto";
+  img.dataset.lowsrc = thumbnail;
+  img.dataset.src = url;
+  img.width = width;
+  img.height = height;
+  img.alt = name;
+
+  item.onclick = function onClick({ target }) {
+    const modal = this.querySelector(".modal");
+
+    if (!modal) {
+      const modalBox = modalComponent(detail);
+      this.appendChild(modalBox);
+      this.scrollIntoView({ behavior: "smooth" });
+      this.classList.add("grid-modal");
+      if (iso) iso.layout();
+    } else if (target === img) {
+      this.classList.remove("grid-modal");
+      modal.remove();
+      if (iso) iso.layout();
+    }
+  };
+
+  return item;
+};
+
+const audioButtonComponent = function audioButtonComponent() {
+  let isPlaying = false;
+
+  const button = document.createElement("button");
+  const icon = document.createElement("i");
+  button.appendChild(icon);
+  icon.classList.add("fas", "fa-play");
+
+  button.onclick = function onClick() {
+    if (!isPlaying) {
+      audio.play();
+      icon.classList.add("fa-pause");
+      icon.classList.remove("fa-play");
+    } else {
+      audio.pause();
+      icon.classList.add("fa-play");
+      icon.classList.remove("fa-pause");
+    }
+
+    isPlaying = !isPlaying;
+  };
+
+  return button;
+};
+
+const loadAudio = function loadAudio(srcBlob) {
   const fr = new FileReader();
   fr.onload = function onLoad(e) {
     audio.src = e.target.result;
-    audio.autoplay = true;
     audio.loop = true;
     audio.innerHTML =
       "Your browser does not support the <code>audio</code> element.";
-    audio.play();
   };
 
   fr.readAsDataURL(srcBlob);
+};
+
+/**
+ * Building a Progress Ring, Quickly
+ * https://css-tricks.com/building-progress-ring-quickly/
+ */
+const setProgress = function setProgress(percent) {
+  const radius = circle.r.baseVal.value;
+  const circumference = radius * 2 * Math.PI;
+
+  circle.style.strokeDasharray = `${circumference} ${circumference}`;
+  circle.style.strokeDashoffset = `${circumference}`;
+
+  const offset = circumference - (percent / 100) * circumference;
+  circle.style.strokeDashoffset = offset;
 };
 
 const fetchViewsCount = async function fetViews() {
@@ -127,9 +184,7 @@ const fetchViews = async function fetViews(start = 0) {
     loadedViews += body.length;
     const data = body.map(({ name, source, source_link, lat, lng, image }) => {
       const { width, height, url, formats } = image;
-      const {
-        thumbnail: { url: thumbnail }
-      } = formats;
+      const thumbnail = formats.thumbnail.url;
       const main = {
         url,
         thumbnail,
@@ -157,28 +212,6 @@ const fetchViews = async function fetViews(start = 0) {
 
       if (iso) iso.appended(itemComp);
     });
-
-    const gridItems = document.querySelectorAll(".grid-item");
-    gridItems.forEach((el) => {
-      el.onclick = function onClick(e) {
-        const targetName = e.target.tagName;
-        const modal = this.querySelector(".modal");
-
-        if (!modal) {
-          const modalData = this.dataset.obj;
-          const modalObj = JSON.parse(modalData);
-          const modalBox = modalComponent(modalObj);
-          this.appendChild(modalBox);
-          this.scrollIntoView({ behavior: "smooth" });
-          this.classList.add("grid-modal");
-          iso.layout();
-        } else if (targetName === "IMG") {
-          this.classList.remove("grid-modal");
-          modal.remove();
-          iso.layout();
-        }
-      };
-    });
   } catch (err) {
     console.log(err);
   }
@@ -195,7 +228,10 @@ const fetchViews = async function fetViews(start = 0) {
 // Try to get data from the cache, but fall back to fetching it live.
 async function getData(urls) {
   let cachedData = await getCachedData(cacheName, urls);
-  if (cachedData) return cachedData;
+
+  if (cachedData) {
+    return cachedData;
+  }
 
   const cacheStorage = await caches.open(cacheName);
   await cacheStorage.addAll(urls);
@@ -233,20 +269,51 @@ async function deleteOldCaches(currentCache) {
 
 (async function fetchData() {
   try {
-    const urls = [config.wThumbnail, config.mThumbnail, ...config.musics];
-    let imageSrc = !isMobile ? config.wThumbnail : config.mThumbnail
+    observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach(async ({ target, isIntersecting }) => {
+          if (isIntersecting) {
+            const acClasses = audioContainer.classList;
+            const targerClass = "hide-container";
+            if (target === thumbnail) {
+              if (!acClasses.contains(targerClass)) {
+                acClasses.add(targerClass);
+              }
+            } else if (target === main) {
+              if (acClasses.contains(targerClass)) {
+                acClasses.remove(targerClass);
+              }
+            } else if (
+              target === loadMore &&
+              !isFetching &&
+              loadedViews < viewsCount
+            ) {
+              isFetching = true;
+              await fetchViews(loadedViews);
+              isFetching = false;
+            }
+          }
+        });
+      },
+      { threshold: 1 }
+    );
 
-    if (isCache) {
+    const urls = [config.wThumbnail, config.mThumbnail, ...config.musics];
+    let imageSrc = !isMobile ? config.wThumbnail : config.mThumbnail;
+
+    if (isCacheAvailable) {
       const [wThumbnail, mThumbnail, ...musics] = await getData(urls);
 
       // https://developer.mozilla.org/en-US/docs/Web/API/URL/createObjectURL
       const imageBlog = URL.createObjectURL(
         !isMobile ? await wThumbnail.blob() : await mThumbnail.blob()
       );
-      imageSrc = imageBlog
+      imageSrc = imageBlog;
 
-      musicList = musics;
-      audioComponent(await musicList[0].blob());
+      Promise.all(musics.map((music) => music.blob()))
+        .then((musics) => (musicList = musics))
+        .then(() => loadAudio(musicList[musicStartIndex]))
+        .finally(() => percentController.appendChild(audioButtonComponent()));
     }
 
     const thumbnailImg = new Image();
@@ -254,8 +321,11 @@ async function deleteOldCaches(currentCache) {
     thumbnailImg.alt = "Thumbnail";
     thumbnail.prepend(thumbnailImg);
 
-    await fetchViewsCount();
-    const { default: Isotope } = await import("isotope-layout");
+    const [, isoLayout] = await Promise.all([
+      fetchViewsCount(),
+      import("isotope-layout")
+    ]);
+    const { default: Isotope } = isoLayout;
     iso = new Isotope(grid, {
       itemSelector: ".grid-item",
       percentPosition: true,
@@ -264,19 +334,11 @@ async function deleteOldCaches(currentCache) {
       }
     });
 
-    observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach(async (entry) => {
-          if (entry.isIntersecting && !isFetching && loadedViews < viewsCount) {
-            isFetching = true;
-            await fetchViews(loadedViews);
-            isFetching = false;
-          }
-        });
-      },
-      { threshold: 1 }
-    );
+    observer.observe(main);
+    observer.observe(thumbnail);
     observer.observe(loadMore);
+
+    setProgress(0);
   } catch (error) {
     console.error({ error });
   }
@@ -284,4 +346,10 @@ async function deleteOldCaches(currentCache) {
 
 scrollButton.onclick = function onClick() {
   grid.scrollIntoView({ behavior: "smooth" });
+};
+
+audio.ontimeupdate = function onTimeUpdate({ srcElement }) {
+  const { duration, currentTime } = srcElement;
+  const progressPercent = (currentTime / duration) * 100;
+  setProgress(progressPercent);
 };
