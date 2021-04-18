@@ -1,10 +1,10 @@
-@import url("https://fonts.googleapis.com/css2?family=Open+Sans:wght@300&family=Roboto:wght@400;700;900&display=swap");
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@300&family=Roboto:wght@400;700;900&display=swap');
 
 .fas {
   -moz-osx-font-smoothing: grayscale;
   -webkit-font-smoothing: antialiased;
   display: inline-block;
-  font-family: "Font Awesome 5 Free";
+  font-family: 'Font Awesome 5 Free';
   font-style: normal;
   font-variant: normal;
   font-weight: 900;
@@ -14,22 +14,22 @@
 }
 
 .fa-map-marker-alt:before {
-  content: "\f3c5";
+  content: '\f3c5';
 }
 
 .fa-pause:before {
-  content: "\f04c";
+  content: '\f04c';
 }
 
 .fa-play:before {
-  content: "\f04b";
+  content: '\f04b';
 }
 
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: "Roboto", sans-serif;
+  font-family: 'Roboto', sans-serif;
 }
 
 .snap-container {
@@ -174,7 +174,7 @@ main {
   display: block;
 
   /* only if you want to change the blur-up option from always to auto or want to use blur up effect without a lowsrc image. */
-  font-family: "blur-up: auto", "object-fit: cover";
+  font-family: 'blur-up: auto', 'object-fit: cover';
   object-fit: cover;
 }
 
@@ -196,7 +196,7 @@ main {
 
 /* clear fix */
 .grid:after {
-  content: "";
+  content: '';
   display: block;
   clear: both;
 }
