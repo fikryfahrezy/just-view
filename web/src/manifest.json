@@ -2,12 +2,19 @@
   "name": "Just View",
   "description": "Take a look at a lot of relaxing images to relax your soul.",
   "background_color": "#ffffff",
+  "theme_color": "#ffffff",
   "display": "fullscreen",
   "start_url": ".",
   "icons": [
     {
-      "src": "src/vue.png",
+      "src": "src/just-view.png",
       "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "src/just-view.png",
+      "sizes": "512x512",
       "type": "image/png"
     }
   ]

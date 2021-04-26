@@ -1,4 +1,3 @@
-import config from './config.json';
 import 'lazysizes';
 import 'lazysizes/plugins/blur-up/ls.blur-up';
 import 'lazysizes/plugins/object-fit/ls.object-fit';
@@ -21,12 +20,15 @@ if ('serviceWorker' in navigator) {
 const cacheVersion = 1;
 const cachePrefix = 'just-view-';
 const cacheName = `${cachePrefix}${cacheVersion}`;
+const serverUrl = process.env.SERVER_URL || '...';
+const wThumbnail = process.env.W_THUMBNAIL;
+const mThumbnail = process.env.M_THUMBNAIL;
+const musics = process.env.MUSICS.split(' ').filter((music) => music && music);
 
 // https://stackoverflow.com/questions/3514784/what-is-the-best-way-to-detect-a-mobile-device
 const isMobile = /Android|webOS|iPhone|iPod|BlackBerry|IEMobile/i.test(
   navigator.userAgent
 );
-const serverUrl = config.serverUrl || '...';
 const grid = document.getElementById('grid');
 const scrollButton = document.getElementById('scroll-button');
 const loadMore = document.getElementById('load-more');
@@ -39,6 +41,7 @@ const percentController = document.getElementById('percent-contoller');
 const isCacheAvailable = 'caches' in window;
 let observer = null;
 let iso = null;
+let imagesLoader = null;
 let isFetching = false;
 let viewsCount = 0;
 let loadedViews = 0;
@@ -281,81 +284,86 @@ async function deleteOldCaches(currentCache) {
 }
 
 (async function fetchData() {
-  try {
-    observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach(async ({ target, isIntersecting }) => {
-          if (isIntersecting) {
-            const acClasses = audioContainer.classList;
-            const targerClass = 'hide-container';
-            if (target === thumbnail) {
-              if (!acClasses.contains(targerClass)) {
-                acClasses.add(targerClass);
-              }
-            } else if (target === main) {
-              if (acClasses.contains(targerClass)) {
-                acClasses.remove(targerClass);
-              }
-            } else if (
-              target === loadMore &&
-              !isFetching &&
-              loadedViews < viewsCount
-            ) {
-              isFetching = true;
-              await fetchViews(loadedViews);
-              isFetching = false;
-            }
-          }
-        });
-      },
-      { threshold: 1 }
+  const urls = [wThumbnail, mThumbnail, ...musics];
+  let imageSrc = !isMobile ? wThumbnail : mThumbnail;
+
+  if (isCacheAvailable) {
+    const [wThumbnail, mThumbnail, ...musics] = await getData(urls);
+
+    // https://developer.mozilla.org/en-US/docs/Web/API/URL/createObjectURL
+    const imageBlog = URL.createObjectURL(
+      !isMobile ? await wThumbnail.blob() : await mThumbnail.blob()
     );
+    imageSrc = imageBlog;
 
-    const urls = [config.wThumbnail, config.mThumbnail, ...config.musics];
-    let imageSrc = !isMobile ? config.wThumbnail : config.mThumbnail;
-
-    if (isCacheAvailable) {
-      const [wThumbnail, mThumbnail, ...musics] = await getData(urls);
-
-      // https://developer.mozilla.org/en-US/docs/Web/API/URL/createObjectURL
-      const imageBlog = URL.createObjectURL(
-        !isMobile ? await wThumbnail.blob() : await mThumbnail.blob()
-      );
-      imageSrc = imageBlog;
-
-      Promise.all(musics.map((music) => music.blob()))
-        .then((musics) => (musicList = musics))
-        .then(() => loadAudio(musicList[musicStartIndex]))
-        .finally(() => percentController.appendChild(audioButtonComponent()));
-    }
-
-    const thumbnailImg = new Image();
-    thumbnailImg.src = imageSrc;
-    thumbnailImg.alt = 'Thumbnail';
-    thumbnail.prepend(thumbnailImg);
-
-    const [, isoLayout] = await Promise.all([
-      fetchViewsCount(),
-      import('isotope-layout'),
-    ]);
-    const { default: Isotope } = isoLayout;
-    iso = new Isotope(grid, {
-      itemSelector: '.grid-item',
-      percentPosition: true,
-      masonry: {
-        columnWidth: '.grid-sizer',
-      },
-    });
-
-    observer.observe(main);
-    observer.observe(thumbnail);
-    observer.observe(loadMore);
-
-    setProgress(0);
-  } catch (error) {
-    console.error({ error });
+    Promise.all(musics.map((music) => music.blob()))
+      .then((musics) => (musicList = musics))
+      .then(() => {
+        loadAudio(musicList[musicStartIndex]);
+        percentController.appendChild(audioButtonComponent());
+      });
   }
-})();
+
+  const thumbnailImg = new Image();
+  thumbnailImg.src = imageSrc;
+  thumbnailImg.alt = 'Thumbnail';
+  thumbnail.prepend(thumbnailImg);
+
+  await fetchViewsCount();
+
+  setProgress(0);
+
+  observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach(async ({ target, isIntersecting }) => {
+        if (isIntersecting) {
+          const acClasses = audioContainer.classList;
+          const targetClass = 'hide-container';
+          if (target === thumbnail) {
+            if (!acClasses.contains(targetClass)) acClasses.add(targetClass);
+          } else if (target === main) {
+            if (acClasses.contains(targetClass)) acClasses.remove(targetClass);
+          } else if (
+            target === loadMore &&
+            !isFetching &&
+            loadedViews < viewsCount
+          ) {
+            isFetching = true;
+            await fetchViews(loadedViews);
+            if (!iso) {
+              const { default: Isotope } = await import('isotope-layout');
+              iso = new Isotope(grid, {
+                itemSelector: '.grid-item',
+                percentPosition: true,
+                masonry: {
+                  columnWidth: '.grid-sizer',
+                },
+              });
+            }
+
+            if (!imagesLoader) {
+              const { default: imagesLoaded } = await import('imagesloaded');
+              imagesLoader = imagesLoaded;
+
+              imagesLoader(grid).on('progress', () => {
+                iso.layout();
+              });
+            }
+
+            isFetching = false;
+          }
+        }
+      });
+    },
+    { threshold: 1 }
+  );
+
+  observer.observe(main);
+  observer.observe(thumbnail);
+  observer.observe(loadMore);
+})().catch((error) => {
+  console.error({ error });
+});
 
 scrollButton.onclick = function onClick() {
   grid.scrollIntoView({ behavior: 'smooth' });

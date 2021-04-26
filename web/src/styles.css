@@ -48,6 +48,7 @@
 header {
   height: 100vh;
   width: 100%;
+  margin-bottom: 25px;
 }
 
 header img {
@@ -59,7 +60,7 @@ header img {
 header > div {
   position: absolute;
   display: flex;
-  width: fit-content;
+  width: max-content;
   color: #fff;
   flex-direction: column;
   align-items: center;
@@ -95,7 +96,6 @@ header button span {
 }
 
 main {
-  min-height: 100vh;
   margin-bottom: 25px;
 }
 
@@ -106,7 +106,6 @@ main {
   bottom: 40px;
   right: 40px;
   border-radius: 100%;
-  box-shadow: 2px 2px 3px #999;
 }
 
 .audio-controller .percent {
@@ -189,6 +188,8 @@ main {
   filter: blur(5px);
 }
 
+/* ---- isotope ---- */
+
 .grid {
   width: 70%;
   margin: 0 auto;
@@ -202,10 +203,14 @@ main {
 }
 
 /* ---- .grid-item ---- */
-.grid-sizer,
+
+.grid-sizer {
+  width: 25%;
+}
+
 .grid-item {
   width: 24%;
-  margin: 0 0.5% 1%;
+  margin: 0.5%;
 }
 
 .grid-item .img {
@@ -257,9 +262,17 @@ main {
 }
 
 @media (max-width: 768px) {
-  .grid-sizer,
+  .grid-sizer {
+    width: 50%;
+  }
+
   .grid-item {
     width: 49%;
+  }
+
+  #audio-container {
+    bottom: 15px;
+    right: 15px;
   }
 }
 
