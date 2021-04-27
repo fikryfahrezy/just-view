@@ -23,7 +23,7 @@ const cacheName = `${cachePrefix}${cacheVersion}`;
 const serverUrl = process.env.SERVER_URL || '...';
 const wThumbnail = process.env.W_THUMBNAIL;
 const mThumbnail = process.env.M_THUMBNAIL;
-const musics = process.env.MUSICS.split(' ').filter((music) => music && music);
+const musics = process.env.MUSICS.split(' ');
 
 // https://stackoverflow.com/questions/3514784/what-is-the-best-way-to-detect-a-mobile-device
 const isMobile = /Android|webOS|iPhone|iPod|BlackBerry|IEMobile/i.test(
