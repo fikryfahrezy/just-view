@@ -1,8 +1,9 @@
+require('dotenv').config();
 const path = require('path');
+const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const WorkboxPlugin = require('workbox-webpack-plugin');
 const WebpackPwaManifest = require('webpack-pwa-manifest');
-const Dotenv = require('dotenv-webpack');
 const manifest = require('./src/manifest.json');
 
 module.exports = {
@@ -37,7 +38,12 @@ module.exports = {
     new WorkboxPlugin.InjectManifest({
       swSrc: './src/sw',
     }),
-    new Dotenv(),
+    new webpack.EnvironmentPlugin({
+      SERVER_URL: process.env.SERVER_URL,
+      W_THUMBNAIL: process.env.W_THUMBNAIL,
+      M_THUMBNAIL: process.env.M_THUBMAIL,
+      MUSICS: process.env.MUSICS,
+    }),
   ],
   output: {
     filename: '[name].[contenthash].js',
