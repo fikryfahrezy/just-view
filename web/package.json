@@ -6,7 +6,10 @@
   "scripts": {
     "dev": "webpack serve --config webpack.dev.js",
     "build": "webpack --config webpack.prod.js",
-    "start": "http-server dist"
+    "start": "http-server dist",
+    "cap-copy": "cap copy",
+    "cap-android": "cap open android",
+    "cap-serve": "cap serve"
   },
   "devDependencies": {
     "css-loader": "^5.2.0",
@@ -21,7 +24,10 @@
     "webpack-dev-server": "^3.11.2",
     "webpack-merge": "^5.7.3",
     "webpack-pwa-manifest": "^4.3.0",
-    "workbox-webpack-plugin": "^6.1.5"
+    "workbox-webpack-plugin": "^6.1.5",
+    "@capacitor/android": "2.4.7",
+    "@capacitor/cli": "^2.4.7",
+    "@capacitor/core": "^2.4.7"
   },
   "keywords": [],
   "dependencies": {
