@@ -1,3 +1,4 @@
+import { PassThrough } from 'stream';
 import { Handler, HandlerEvent } from '@netlify/functions';
 import Busboy from 'busboy';
 import { Client } from '@notionhq/client';
@@ -32,6 +33,7 @@ const busboyHandler: (events: BusboyHandlerParams) => Promise<string> = function
     const result: ResultType = {
       file: null,
     };
+    const pass = new PassThrough();
     const busboy = new Busboy({
       headers: {
         ...headers,
@@ -41,9 +43,13 @@ const busboyHandler: (events: BusboyHandlerParams) => Promise<string> = function
 
     busboy
       .on('file', (_, file) => {
-        file.on('data', (data) => {
-          console.log(data);
-        });
+        file
+          .on('data', (data) => {
+            pass.write(data);
+          })
+          .on('end', () => {
+            pass.end();
+          });
       })
       .on('field', (fieldname, value) => {
         try {
