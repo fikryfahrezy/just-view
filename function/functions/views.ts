@@ -67,25 +67,25 @@ const busboyHandler: (events: BusboyHandlerParams) => Promise<string> = function
   });
 };
 
+const queryDb = function queryDb(dbId: string, startCursor: string | undefined) {
+  return notion.databases.query({
+    database_id: dbId,
+    sorts: [
+      {
+        timestamp: 'created_time',
+        direction: 'ascending',
+      },
+    ],
+    start_cursor: startCursor,
+    page_size: 10,
+  });
+};
+
 const viewsQuery = async function viewsQuery(startCursor: string | undefined = undefined) {
   const databaseId = process.env.NOTION_VIEWSDB_ID;
 
   if (databaseId) {
-    const {
-      has_more,
-      next_cursor,
-      results: data,
-    } = await notion.databases.query({
-      database_id: databaseId,
-      sorts: [
-        {
-          timestamp: 'created_time',
-          direction: 'ascending',
-        },
-      ],
-      start_cursor: startCursor,
-      page_size: 10,
-    });
+    const { has_more, next_cursor, results: data } = await queryDb(databaseId, startCursor);
 
     const result = data.map(({ properties }: Record<string, any>) => ({
       name: properties.name.title[0].text.content,
@@ -107,21 +107,7 @@ const musicsQuery = async function viewsQuery(startCursor: string | undefined = 
   const databaseId = process.env.NOTION_MUSICSDB_ID;
 
   if (databaseId) {
-    const {
-      has_more,
-      next_cursor,
-      results: data,
-    } = await notion.databases.query({
-      database_id: databaseId,
-      sorts: [
-        {
-          timestamp: 'created_time',
-          direction: 'ascending',
-        },
-      ],
-      start_cursor: startCursor,
-      page_size: 10,
-    });
+    const { has_more, next_cursor, results: data } = await queryDb(databaseId, startCursor);
 
     const result = data.map(({ properties }: Record<string, any>) => ({
       title: properties.title.title[0].text.content,
