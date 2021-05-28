@@ -67,20 +67,109 @@ const busboyHandler: (events: BusboyHandlerParams) => Promise<string> = function
   });
 };
 
+const viewsQuery = async function viewsQuery(startCursor: string | undefined = undefined) {
+  const databaseId = process.env.NOTION_VIEWSDB_ID;
+
+  if (databaseId) {
+    const {
+      has_more,
+      next_cursor,
+      results: data,
+    } = await notion.databases.query({
+      database_id: databaseId,
+      sorts: [
+        {
+          timestamp: 'created_time',
+          direction: 'ascending',
+        },
+      ],
+      start_cursor: startCursor,
+      page_size: 10,
+    });
+
+    const result = data.map(({ properties }: Record<string, any>) => ({
+      name: properties.name.title[0].text.content,
+      image: properties.image.rich_text[0].text.content,
+      low_image: properties.low_image.rich_text[0].text.content,
+      width: properties.width.number,
+      heigh: properties.height.number,
+      source: properties.source.rich_text[0].text.content,
+      source_link: properties.source_link.rich_text[0].text.content,
+      lat: properties.lat.number,
+      lng: properties.lng.number,
+    }));
+
+    return { result, has_more, next_cursor };
+  } else return null;
+};
+
+const musicsQuery = async function viewsQuery(startCursor: string | undefined = undefined) {
+  const databaseId = process.env.NOTION_MUSICSDB_ID;
+
+  if (databaseId) {
+    const {
+      has_more,
+      next_cursor,
+      results: data,
+    } = await notion.databases.query({
+      database_id: databaseId,
+      sorts: [
+        {
+          timestamp: 'created_time',
+          direction: 'ascending',
+        },
+      ],
+      start_cursor: startCursor,
+      page_size: 10,
+    });
+
+    const result = data.map(({ properties }: Record<string, any>) => ({
+      title: properties.title.title[0].text.content,
+      author: properties.author.rich_text[0].text.content,
+      url: properties.url.rich_text[0].text.content,
+      copyright: properties.copyright.rich_text[0].text.content,
+    }));
+
+    return { result, has_more, next_cursor };
+  } else return null;
+};
+
+const response = function response(
+  statuscode: number = 400,
+  message: string = 'fail',
+  data: unknown = null,
+) {
+  return {
+    statusCode: statuscode,
+    body: JSON.stringify({ message, data }),
+  };
+};
+
 const handler: Handler = async (event) => {
-  if (event.body) {
-    const { body, headers, isBase64Encoded } = event;
+  const { body, queryStringParameters } = event;
+  if (body) {
+    const { headers, isBase64Encoded } = event;
     const message = await busboyHandler({ body, headers, isBase64Encoded });
-    return {
-      statusCode: 200,
-      body: JSON.stringify({ message }),
-    };
-  } else {
-    return {
-      statusCode: 400,
-      body: JSON.stringify({ message: 'Fail' }),
-    };
+    return response(200, message, null);
   }
+
+  if (queryStringParameters) {
+    const { s, t } = queryStringParameters;
+
+    if (!t) return response();
+
+    try {
+      const viewData = await (t.toLowerCase() === 'view' ? viewsQuery(s) : musicsQuery(s));
+
+      if (viewData) return response(200, 'success', viewData);
+      else return response();
+    } catch (e) {
+      console.log(e);
+      return response();
+    }
+  }
+
+  return response();
 };
 
 export { handler };

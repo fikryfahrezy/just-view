@@ -60,155 +60,159 @@ export const config = {
 };
 
 const inputView = async function inputView(data: InputViewData) {
-  const result = await notion.pages.create({
-    parent: {
-      database_id: process.env.NOTION_VIEWSDB_ID as string,
-    },
-    properties: {
-      name: {
-        id: 'title',
-        type: 'title',
-        title: [
-          {
-            type: 'text',
-            text: {
-              content: data.name,
-            },
-          },
-        ],
-      },
-      image: {
-        id: 'ltI|',
-        type: 'rich_text',
-        rich_text: [
-          {
-            type: 'text',
-            text: {
-              content: data.image,
-            },
-          },
-        ],
-      },
-      low_image: {
-        id: 'eITU',
-        type: 'rich_text',
-        rich_text: [
-          {
-            type: 'text',
-            text: {
-              content: data.low_image,
-            },
-          },
-        ],
-      },
-      width: {
-        id: '\\yDn',
-        type: 'number',
-        number: data.width,
-      },
-      height: {
-        id: '_@^U',
-        type: 'number',
-        number: data.height,
-      },
-      source: {
-        id: 'Am~T',
-        type: 'rich_text',
-        rich_text: [
-          {
-            type: 'text',
-            text: {
-              content: data.source,
-            },
-          },
-        ],
-      },
-      source_link: {
-        id: 'EMdM',
-        type: 'rich_text',
-        rich_text: [
-          {
-            type: 'text',
-            text: {
-              content: data.source_link,
-            },
-          },
-        ],
-      },
-      lat: {
-        id: 'Ay>}',
-        type: 'number',
-        number: data.lat,
-      },
-      lng: {
-        id: 'tk;A',
-        type: 'number',
-        number: data.lng,
-      },
-    },
-  });
+  const databaseId = process.env.NOTION_VIEWSDB_ID;
 
-  return result;
+  if (databaseId)
+    return notion.pages.create({
+      parent: {
+        database_id: databaseId,
+      },
+      properties: {
+        name: {
+          id: 'title',
+          type: 'title',
+          title: [
+            {
+              type: 'text',
+              text: {
+                content: data.name,
+              },
+            },
+          ],
+        },
+        image: {
+          id: 'ltI|',
+          type: 'rich_text',
+          rich_text: [
+            {
+              type: 'text',
+              text: {
+                content: data.image,
+              },
+            },
+          ],
+        },
+        low_image: {
+          id: 'eITU',
+          type: 'rich_text',
+          rich_text: [
+            {
+              type: 'text',
+              text: {
+                content: data.low_image,
+              },
+            },
+          ],
+        },
+        width: {
+          id: '\\yDn',
+          type: 'number',
+          number: data.width,
+        },
+        height: {
+          id: '_@^U',
+          type: 'number',
+          number: data.height,
+        },
+        source: {
+          id: 'Am~T',
+          type: 'rich_text',
+          rich_text: [
+            {
+              type: 'text',
+              text: {
+                content: data.source,
+              },
+            },
+          ],
+        },
+        source_link: {
+          id: 'EMdM',
+          type: 'rich_text',
+          rich_text: [
+            {
+              type: 'text',
+              text: {
+                content: data.source_link,
+              },
+            },
+          ],
+        },
+        lat: {
+          id: 'Ay>}',
+          type: 'number',
+          number: data.lat,
+        },
+        lng: {
+          id: 'tk;A',
+          type: 'number',
+          number: data.lng,
+        },
+      },
+    });
+  else return Promise.resolve({});
 };
 
 const inputMusic = async function inputMusic(data: InputMusicData) {
-  const result = await notion.pages.create({
-    parent: {
-      database_id: process.env.NOTION_MUSICSDB_ID as string,
-    },
-    properties: {
-      title: {
-        id: 'title',
-        type: 'title',
-        title: [
-          {
-            type: 'text',
-            text: {
-              content: data.title,
-            },
-          },
-        ],
-      },
-      author: {
-        id: '~^[f',
-        type: 'rich_text',
-        rich_text: [
-          {
-            type: 'text',
-            text: {
-              content: data.author,
-            },
-          },
-        ],
-      },
-      url: {
-        id: 'lso]',
-        type: 'rich_text',
-        rich_text: [
-          {
-            type: 'text',
-            text: {
-              content: data.url,
-            },
-          },
-        ],
-      },
-      copyright: {
-        id: ';OP`',
-        type: 'rich_text',
-        rich_text: [
-          {
-            type: 'text',
-            text: {
-              content: data.copyright,
-            },
-          },
-        ],
-      },
-    },
-  });
+  const databaseId = process.env.NOTION_MUSICSDB_ID;
 
-  return result;
+  if (databaseId)
+    return notion.pages.create({
+      parent: {
+        database_id: databaseId,
+      },
+      properties: {
+        title: {
+          id: 'title',
+          type: 'title',
+          title: [
+            {
+              type: 'text',
+              text: {
+                content: data.title,
+              },
+            },
+          ],
+        },
+        author: {
+          id: '~^[f',
+          type: 'rich_text',
+          rich_text: [
+            {
+              type: 'text',
+              text: {
+                content: data.author,
+              },
+            },
+          ],
+        },
+        url: {
+          id: 'lso]',
+          type: 'rich_text',
+          rich_text: [
+            {
+              type: 'text',
+              text: {
+                content: data.url,
+              },
+            },
+          ],
+        },
+        copyright: {
+          id: ';OP`',
+          type: 'rich_text',
+          rich_text: [
+            {
+              type: 'text',
+              text: {
+                content: data.copyright,
+              },
+            },
+          ],
+        },
+      },
+    });
+  else return Promise.resolve({});
 };
 
 const upload = function upload(req: NextApiRequest, type: 'music' | 'view') {
