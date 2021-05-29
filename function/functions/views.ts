@@ -92,7 +92,7 @@ const viewsQuery = async function viewsQuery(startCursor: string | undefined = u
       image: properties.image.rich_text[0].text.content,
       low_image: properties.low_image.rich_text[0].text.content,
       width: properties.width.number,
-      heigh: properties.height.number,
+      height: properties.height.number,
       source: properties.source.rich_text[0].text.content,
       source_link: properties.source_link.rich_text[0].text.content,
       lat: properties.lat.number,
@@ -127,6 +127,9 @@ const response = function response(
 ) {
   return {
     statusCode: statuscode,
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+    },
     body: JSON.stringify({ message, data }),
   };
 };

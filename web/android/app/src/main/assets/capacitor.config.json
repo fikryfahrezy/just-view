@@ -1,13 +1,12 @@
 {
-  "appId": "com.justview.app",
-  "appName": "Just View",
-  "bundledWebRuntime": false,
-  "npmClient": "yarn",
-  "webDir": "dist",
-  "plugins": {
-    "SplashScreen": {
-      "launchShowDuration": 0
-    }
-  },
-  "cordova": {}
+	"appId": "com.justview.app",
+	"appName": "Just View",
+	"bundledWebRuntime": false,
+	"webDir": "./dist",
+	"plugins": {
+		"SplashScreen": {
+			"launchShowDuration": 0
+		}
+	},
+	"cordova": {}
 }

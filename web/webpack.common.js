@@ -2,12 +2,9 @@ require('dotenv').config();
 const path = require('path');
 const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const WorkboxPlugin = require('workbox-webpack-plugin');
-const WebpackPwaManifest = require('webpack-pwa-manifest');
-const manifest = require('./src/manifest.json');
 
 module.exports = {
-  entry: './src/index.js',
+  entry: './src/index.ts',
   module: {
     rules: [
       {
@@ -22,24 +19,26 @@ module.exports = {
         test: /\.(png|svg|jpg|jpeg|gif)$/i,
         type: 'asset/resource',
       },
+      {
+        test: /\.tsx?$/,
+        use: 'ts-loader',
+        exclude: /node_modules/,
+      },
     ],
+  },
+  resolve: {
+    extensions: ['.tsx', '.ts', '.js'],
   },
   plugins: [
     new HtmlWebpackPlugin({
       template: 'src/index.html',
       favicon: 'src/favicon.ico',
     }),
-    new HtmlWebpackPlugin({
-      template: 'src/offline.html',
-      filename: 'offline.html',
-      inject: false,
-    }),
-    new WebpackPwaManifest(manifest),
-    new WorkboxPlugin.InjectManifest({
-      swSrc: './src/sw',
-    }),
     new webpack.EnvironmentPlugin({
-      SERVER_URL: process.env.SERVER_URL,
+      CACHE_TIME: Date.now(),
+      IS_MONGO: process.env.IS_MONGO,
+      SERVER_MONGO: process.env.SERVER_MONGO,
+      SERVER_NOTION: process.env.SERVER_NOTION,
       W_THUMBNAIL: process.env.W_THUMBNAIL,
       M_THUMBNAIL: process.env.M_THUBMAIL,
       MUSICS: process.env.MUSICS,
@@ -48,7 +47,7 @@ module.exports = {
   output: {
     filename: '[name].[contenthash].js',
     path: path.resolve(__dirname, 'dist'),
-    publicPath: './',
+    publicPath: '/',
     clean: true,
   },
 };

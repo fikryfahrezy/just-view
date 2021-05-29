@@ -268,9 +268,9 @@ const upload = function upload(req: NextApiRequest, type: 'music' | 'view') {
         default:
           const { file, ...rest } = fields;
           const restData = rest as ReqView;
-          const { lat, lng } = restData;
-          const inputData = { ...restData, lat: Number(lat), lng: Number(lng) };
+          const inputData = { ...restData, lat: Number(restData.lat), lng: Number(restData.lng) };
           const cloudinaryOption = {
+            folder: 'justview/notionapi',
             eager: [{ quality: 1, format: 'jpg', width: '0.5', effect: 'pixelate:20' }],
           };
           const buffArrayLengh = buffers.length;
@@ -281,24 +281,26 @@ const upload = function upload(req: NextApiRequest, type: 'music' | 'view') {
           }
 
           if (file && buffArrayLengh === 0) {
-            cloudinary.uploader.upload(file as string, cloudinaryOption, (error, result) => {
-              if (error) {
-                reject(false);
-                return;
-              }
+            if (typeof file === 'string')
+              cloudinary.uploader.upload(file, cloudinaryOption, (error, result) => {
+                if (error) {
+                  reject(false);
+                  return;
+                }
 
-              if (result)
-                inputView({
-                  ...inputData,
-                  image: result.url,
-                  low_image: result.eager[0].url,
-                  height: result.height,
-                  width: result.width,
-                })
-                  .then(() => resolve(true))
-                  .catch(() => reject(false));
-              else resolve(true);
-            });
+                if (result)
+                  inputView({
+                    ...inputData,
+                    image: result.url,
+                    low_image: result.eager[0].url,
+                    height: result.height,
+                    width: result.width,
+                  })
+                    .then(() => resolve(true))
+                    .catch(() => reject(false));
+                else resolve(true);
+              });
+            else resolve(false);
           } else if (!file && buffArrayLengh > 0) {
             const stream = cloudinary.uploader.upload_stream(cloudinaryOption, (error, result) => {
               if (error) {
@@ -331,8 +333,8 @@ const upload = function upload(req: NextApiRequest, type: 'music' | 'view') {
 const handler = async function handler(req: NextApiRequest, res: NextApiResponse<Data>) {
   const { q } = req.query;
   if (req.method?.toLowerCase() === 'post' && q) {
-    const isUploded = await (q === 'music' ? upload(req, 'music') : upload(req, 'view'));
-    if (isUploded) res.status(200).json({ message: 'sucess' });
+    const isUploaded = await (q === 'music' ? upload(req, 'music') : upload(req, 'view'));
+    if (isUploaded) res.status(200).json({ message: 'sucess' });
     else res.status(400).json({ message: 'fail' });
   } else {
     res.status(200).json({ message: 'hi' });

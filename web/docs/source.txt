@@ -19,3 +19,9 @@ https://developer.mozilla.org/en-US/docs/Web/API/FileReader
 
 Building a Progress Ring, Quickly
 https://css-tricks.com/building-progress-ring-quickly
+
+Workbox service worker not updating when Its changed
+https://stackoverflow.com/a/49530917/12976234
+
+Service Workers: an Introduction
+https://developers.google.com/web/fundamentals/primers/service-workers

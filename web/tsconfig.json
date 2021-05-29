@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "display": "Recommended",
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "**/*.spec.ts"],
+  "compilerOptions": {
+    "outDir": "./dist/",
+    "sourceMap": true,
+    "noImplicitAny": true,
+    "module": "CommonJS",
+    "target": "es5",
+    "jsx": "react",
+    "lib": ["DOM", "WebWorker"],
+    "allowJs": true,
+    "moduleResolution": "node"
+  }
+}
