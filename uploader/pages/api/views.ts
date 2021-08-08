@@ -232,6 +232,7 @@ const upload = function upload(req: NextApiRequest, type: 'music' | 'view') {
         form.handlePart(part);
         return;
       }
+
       part
         .on('data', (buffer) => {
           buffers.push(buffer);
@@ -242,6 +243,7 @@ const upload = function upload(req: NextApiRequest, type: 'music' | 'view') {
           pass.end();
         });
     };
+
     form.parse(req, (err, fields) => {
       switch (type) {
         case 'music':
@@ -256,10 +258,10 @@ const upload = function upload(req: NextApiRequest, type: 'music' | 'view') {
               }
 
               if (result)
-                inputMusic({ ...restMusic, url: result.url })
+                inputMusic({ ...restMusic, url: result.secure_url })
                   .then(() => resolve(true))
                   .catch(() => reject(false));
-              else resolve(true);
+              else reject(false);
             },
           );
 
@@ -280,27 +282,25 @@ const upload = function upload(req: NextApiRequest, type: 'music' | 'view') {
             return;
           }
 
-          if (file && buffArrayLengh === 0) {
-            if (typeof file === 'string')
-              cloudinary.uploader.upload(file, cloudinaryOption, (error, result) => {
-                if (error) {
-                  reject(false);
-                  return;
-                }
+          if (file && buffArrayLengh === 0 && typeof file === 'string') {
+            cloudinary.uploader.upload(file, cloudinaryOption, (error, result) => {
+              if (error) {
+                reject(false);
+                return;
+              }
 
-                if (result)
-                  inputView({
-                    ...inputData,
-                    image: result.url,
-                    low_image: result.eager[0].url,
-                    height: result.height,
-                    width: result.width,
-                  })
-                    .then(() => resolve(true))
-                    .catch(() => reject(false));
-                else resolve(true);
-              });
-            else resolve(false);
+              if (result)
+                inputView({
+                  ...inputData,
+                  image: result.secure_url,
+                  low_image: result.eager[0].secure_url,
+                  height: result.height,
+                  width: result.width,
+                })
+                  .then(() => resolve(true))
+                  .catch(() => reject(false));
+              else reject(false);
+            });
           } else if (!file && buffArrayLengh > 0) {
             const stream = cloudinary.uploader.upload_stream(cloudinaryOption, (error, result) => {
               if (error) {
@@ -311,14 +311,14 @@ const upload = function upload(req: NextApiRequest, type: 'music' | 'view') {
               if (result)
                 inputView({
                   ...inputData,
-                  image: result.url,
-                  low_image: result.eager[0].url,
+                  image: result.secure_url,
+                  low_image: result.eager[0].secure_url,
                   height: result.height,
                   width: result.width,
                 })
                   .then(() => resolve(true))
                   .catch(() => reject(false));
-              else resolve(true);
+              else reject(false);
             });
 
             pass.pipe(stream);
@@ -331,13 +331,17 @@ const upload = function upload(req: NextApiRequest, type: 'music' | 'view') {
 };
 
 const handler = async function handler(req: NextApiRequest, res: NextApiResponse<Data>) {
-  const { q } = req.query;
-  if (req.method?.toLowerCase() === 'post' && q) {
-    const isUploaded = await (q === 'music' ? upload(req, 'music') : upload(req, 'view'));
-    if (isUploaded) res.status(200).json({ message: 'sucess' });
-    else res.status(400).json({ message: 'fail' });
-  } else {
-    res.status(200).json({ message: 'hi' });
+  try {
+    const { q } = req.query;
+    if (req.method?.toLowerCase() === 'post' && q) {
+      await (q === 'music' ? upload(req, 'music') : upload(req, 'view'));
+
+      res.status(200).json({ message: 'sucess' });
+    } else {
+      res.status(200).json({ message: 'hi' });
+    }
+  } catch (e) {
+    res.status(400).json({ message: 'fail' });
   }
 };
 

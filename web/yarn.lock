@@ -1374,24 +1374,10 @@
   resolved "https://registry.npmjs.org/@types/html-minifier-terser/-/html-minifier-terser-5.1.1.tgz"
   integrity sha512-giAlZwstKbmvMk1OO7WXSj4OZ0keXAcl2TQq4LWHiiPH2ByaH7WeUzng+Qej8UPxxv+8lRTuouo0iaNDBuzIBA==
 
-"@types/imagesloaded@^4.1.2":
-  version "4.1.2"
-  resolved "https://registry.yarnpkg.com/@types/imagesloaded/-/imagesloaded-4.1.2.tgz#da743c8d9f4a04f795e99d7921aae7c20af5d2e1"
-  integrity sha512-QxpoYhaYgv1qXwwPd6EnQFLkzrRZaecIafPsY51fnrsr+qIh0wrPVaOQirBaFl+FjFHk5BMfpf+6QHy0lRrcNw==
-  dependencies:
-    "@types/jquery" "*"
-
 "@types/isotope-layout@^3.0.8":
   version "3.0.8"
   resolved "https://registry.yarnpkg.com/@types/isotope-layout/-/isotope-layout-3.0.8.tgz#ae8acc9d457482da8c77653ed213adc90a658476"
   integrity sha512-hJitV6MQnZ98GBiYkh4PA7hvXVZJoqehMLVsmf0v/xCkv4O8xaJVPD7pjCFXWswDQ2jB7a3dUCGzWZxlLtjINg==
-
-"@types/jquery@*":
-  version "3.5.5"
-  resolved "https://registry.yarnpkg.com/@types/jquery/-/jquery-3.5.5.tgz#2c63f47c9c8d96693d272f5453602afd8338c903"
-  integrity sha512-6RXU9Xzpc6vxNrS6FPPapN1SxSHgQ336WC6Jj/N8q30OiaBZ00l1GBgeP7usjVZPivSkGUfL1z/WW6TX989M+w==
-  dependencies:
-    "@types/sizzle" "*"
 
 "@types/json-schema@*", "@types/json-schema@^7.0.6":
   version "7.0.7"
@@ -1414,11 +1400,6 @@
   integrity sha512-yy7HuzQhj0dhGpD8RLXSZWEkLsV9ibvxvi6EiJ3bkqLAO1RGo0WbkWQiwpRlSFymTJRz0d3k5LM3kkx8ArDbLw==
   dependencies:
     "@types/node" "*"
-
-"@types/sizzle@*":
-  version "2.3.3"
-  resolved "https://registry.yarnpkg.com/@types/sizzle/-/sizzle-2.3.3.tgz#ff5e2f1902969d305225a047c8a0fd5c915cebef"
-  integrity sha512-JYM8x9EGF163bEyhdJBpR2QX1R5naCJHC8ucJylJ3w9/CVBaskdQ8WqBf8MmQrd1kRvp/a4TS8HJ+bxzR7ZJYQ==
 
 "@webassemblyjs/ast@1.11.0":
   version "1.11.0"
@@ -3310,13 +3291,6 @@ image-q@^1.1.1:
   version "1.1.1"
   resolved "https://registry.npmjs.org/image-q/-/image-q-1.1.1.tgz"
   integrity sha1-/IQJlmRGC5DKhi2TALa/u7+/gFY=
-
-imagesloaded@^4.1.4:
-  version "4.1.4"
-  resolved "https://registry.npmjs.org/imagesloaded/-/imagesloaded-4.1.4.tgz"
-  integrity sha512-ltiBVcYpc/TYTF5nolkMNsnREHW+ICvfQ3Yla2Sgr71YFwQ86bDwV9hgpFhFtrGPuwEx5+LqOHIrdXBdoWwwsA==
-  dependencies:
-    ev-emitter "^1.0.0"
 
 import-local@^2.0.0:
   version "2.0.0"

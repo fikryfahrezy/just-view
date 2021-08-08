@@ -31,9 +31,9 @@ const audio = document.getElementById('audio') as HTMLAudioElement;
 const circle = document.getElementById('progress') as unknown as SVGCircleElement;
 const percentController = document.getElementById('percent-contoller');
 const isCacheAvailable = 'caches' in window;
+
 let observer = null;
 let iso: Isotope | null = null;
-let imagesLoader: ImagesLoaded.ImagesLoadedConstructor | null = null;
 let musicList: Blob[] = [];
 let fetchViewsMongo: FetchViewMongo | null = null;
 let fetchViewsNotion: FetchViewNotion | null = null;
@@ -60,6 +60,7 @@ if ('serviceWorker' in navigator) {
 // Delete any old caches to respect user's disk space.
 async function deleteOldCaches(currentCache: string) {
   const keys = await caches.keys();
+
   keys.forEach((key) => {
     const isOurCache = key.includes(currentCache);
     if (!isOurCache) {
@@ -95,8 +96,11 @@ async function getData(urls: string[]) {
   }
 
   const cacheStorage = await caches.open(cacheName);
+
   await cacheStorage.addAll(urls);
+
   cachedData = await getCachedData(cacheName);
+
   await deleteOldCaches(cacheName);
 
   return cachedData;
@@ -109,16 +113,37 @@ async function getData(urls: string[]) {
 const setProgress = function setProgress(percent: number) {
   const radius = circle.r.baseVal.value;
   const circumference = radius * 2 * Math.PI;
+  const offset = circumference - (percent / 100) * circumference;
 
   circle.style.strokeDasharray = `${circumference} ${circumference}`;
   circle.style.strokeDashoffset = `${circumference}`;
-
-  const offset = circumference - (percent / 100) * circumference;
   circle.style.strokeDashoffset = String(offset);
+};
+
+const loadAudio = function loadAudio(srcBlob: Blob) {
+  const fr = new FileReader();
+  fr.onload = function onLoad(e) {
+    const result = e.target.result;
+    if (typeof result === 'string') audio.src = result;
+
+    audio.loop = true;
+    audio.innerHTML = 'Your browser does not support the <code>audio</code> element.';
+  };
+
+  fr.readAsDataURL(srcBlob);
+};
+
+const thumbnailComponent = function thumbnailComponent(imageSrc: string) {
+  const thumbnailImg = new Image();
+
+  thumbnailImg.src = imageSrc;
+  thumbnailImg.alt = 'Thumbnail';
+  thumbnail.prepend(thumbnailImg);
 };
 
 const modalAnchorComponent = function modalAnchorComponent(link: string) {
   const anchor = document.createElement('a');
+
   anchor.target = '_blank';
   anchor.rel = 'noreferrer';
   anchor.href = link;
@@ -186,6 +211,7 @@ const itemComponent = function itemComponent({ main, detail }: ItemComponentData
 
     if (!modal) {
       const modalBox = modalComponent(detail);
+
       item.appendChild(modalBox);
       item.scrollIntoView({ behavior: 'smooth' });
       item.classList.add('grid-modal');
@@ -227,17 +253,34 @@ const audioButtonComponent = function audioButtonComponent() {
   return button;
 };
 
-const loadAudio = function loadAudio(srcBlob: Blob) {
-  const fr = new FileReader();
-  fr.onload = function onLoad(e) {
-    const result = e.target.result;
-    if (typeof result === 'string') audio.src = result;
+const showHideAudioContoller = function showHideAudioContoller(isIntersecting: boolean) {
+  const acClasses = audioContainer.classList;
+  const targetClass = 'hide-container';
 
-    audio.loop = true;
-    audio.innerHTML = 'Your browser does not support the <code>audio</code> element.';
-  };
+  if (isIntersecting && acClasses.contains(targetClass)) acClasses.remove(targetClass);
+  else if (!acClasses.contains(targetClass)) acClasses.add(targetClass);
+};
 
-  fr.readAsDataURL(srcBlob);
+const appendItemComponent = function appendItemComponent(itemData: ItemComponentData[]) {
+  itemData.forEach((val) => {
+    const itemComp = itemComponent(val);
+    grid.appendChild(itemComp);
+
+    if (iso) iso.appended(itemComp);
+  });
+};
+
+const importIso = async function importIso() {
+  if (!iso) {
+    const Isotope = await import('isotope-layout');
+    iso = new Isotope(grid, {
+      itemSelector: '.grid-item',
+      percentPosition: true,
+      masonry: {
+        columnWidth: '.grid-sizer',
+      },
+    });
+  }
 };
 
 async function loadData() {
@@ -256,35 +299,21 @@ async function loadData() {
     itemData = data;
   }
 
-  itemData.forEach((val) => {
-    const itemComp = itemComponent(val);
-    grid.appendChild(itemComp);
-
-    if (iso) iso.appended(itemComp);
-  });
-
-  if (!iso) {
-    const Isotope = await import('isotope-layout');
-    iso = new Isotope(grid, {
-      itemSelector: '.grid-item',
-      percentPosition: true,
-      masonry: {
-        columnWidth: '.grid-sizer',
-      },
-    });
-  }
-
-  if (!imagesLoader) {
-    const imagesLoaded = await import('imagesloaded');
-    imagesLoader = imagesLoaded;
-
-    imagesLoader(grid).on('progress', () => {
-      iso.layout();
-    });
-  }
+  appendItemComponent(itemData);
+  await importIso();
 }
 
-(async function fetchData() {
+scrollButton.addEventListener('click', () => {
+  grid.scrollIntoView({ behavior: 'smooth' });
+});
+
+audio.addEventListener('timeupdate', ({ target }) => {
+  const { duration, currentTime } = target as HTMLAudioElement;
+  const progressPercent = (currentTime / duration) * 100;
+  setProgress(progressPercent);
+});
+
+(async function init() {
   const urls = [wThumbnail, mThumbnail, ...musics];
   let imageSrc = !isMobile ? wThumbnail : mThumbnail;
 
@@ -295,6 +324,7 @@ async function loadData() {
     const imageBlog = URL.createObjectURL(
       !isMobile ? await wThumbnail.blob() : await mThumbnail.blob(),
     );
+
     imageSrc = imageBlog;
 
     Promise.all(musics.map((music) => music.blob()))
@@ -305,18 +335,16 @@ async function loadData() {
       });
   }
 
-  const thumbnailImg = new Image();
-  thumbnailImg.src = imageSrc;
-  thumbnailImg.alt = 'Thumbnail';
-  thumbnail.prepend(thumbnailImg);
+  thumbnailComponent(imageSrc);
 
   if (isMongo && !fetchViewsMongo) {
     const { fetchViewsMongo: fetchMongo, fetchViewsCount } = await import('./lib/fetchMongo');
-    fetchViewsMongo = fetchMongo;
 
+    fetchViewsMongo = fetchMongo;
     viewsCount = await fetchViewsCount(serverUrl);
   } else if (!isMongo && !fetchViewsNotion) {
     const { default: fetchNotion } = await import('./lib/fetchNotion');
+
     fetchViewsNotion = fetchNotion;
   }
 
@@ -326,16 +354,14 @@ async function loadData() {
     (entries) => {
       entries.forEach(async ({ target, isIntersecting }) => {
         if (isIntersecting) {
-          const acClasses = audioContainer.classList;
-          const targetClass = 'hide-container';
-          if (target === thumbnail) {
-            if (!acClasses.contains(targetClass)) acClasses.add(targetClass);
-          } else if (target === main) {
-            if (acClasses.contains(targetClass)) acClasses.remove(targetClass);
-          } else if (target === loadMore && !isFetching && hasMore) {
+          if (target === loadMore && !isFetching && hasMore) {
             isFetching = true;
+
             await loadData();
+
             isFetching = false;
+          } else {
+            showHideAudioContoller(target === thumbnail);
           }
         }
       });
@@ -348,14 +374,4 @@ async function loadData() {
   observer.observe(loadMore);
 })().catch((error) => {
   console.error({ error });
-});
-
-scrollButton.addEventListener('click', () => {
-  grid.scrollIntoView({ behavior: 'smooth' });
-});
-
-audio.addEventListener('timeupdate', ({ target }) => {
-  const { duration, currentTime } = target as HTMLAudioElement;
-  const progressPercent = (currentTime / duration) * 100;
-  setProgress(progressPercent);
 });
