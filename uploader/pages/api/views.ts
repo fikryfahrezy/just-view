@@ -7,6 +7,7 @@ import { v2 as cloudinary } from 'cloudinary';
 import { Client } from '@notionhq/client';
 
 type Data = {
+  success: boolean;
   message: string;
 };
 
@@ -336,12 +337,12 @@ const handler = async function handler(req: NextApiRequest, res: NextApiResponse
     if (req.method?.toLowerCase() === 'post' && q) {
       await (q === 'music' ? upload(req, 'music') : upload(req, 'view'));
 
-      res.status(200).json({ message: 'sucess' });
+      res.status(200).json({ success: true, message: 'sucess' });
     } else {
-      res.status(200).json({ message: 'hi' });
+      res.status(200).json({ success: true, message: 'hi' });
     }
   } catch (e) {
-    res.status(400).json({ message: 'fail' });
+    res.status(400).json({ success: false, message: 'fail' });
   }
 };
 
