@@ -1,0 +1,10 @@
+services:
+  justview-uploader:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        - PORT=${PORT}
+    env_file:
+      - path: ./.env
+        required: true

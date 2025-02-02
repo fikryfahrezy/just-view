@@ -5,7 +5,7 @@
   "private": "true",
   "scripts": {
     "dev": "webpack serve --config webpack.dev.js",
-    "build": "webpack --config webpack.prod.js",
+    "build": "NODE_OPTIONS=--openssl-legacy-provider webpack --config webpack.prod.js",
     "start": "http-server dist",
     "cap-sync": "cap sync",
     "cap-run": "cap run",

@@ -13,8 +13,7 @@ import './styles.css';
 const cacheVersion = 1;
 const cachePrefix = 'just-view';
 const cacheName = `${cachePrefix}-${cacheVersion}-${process.env.CACHE_TIME}`;
-const isMongo = JSON.parse(process.env.IS_MONGO);
-const serverUrl = isMongo ? process.env.SERVER_MONGO : process.env.SERVER_NOTION;
+const serverUrl = process.env.SERVER_NOTION;
 const wThumbnail = process.env.W_THUMBNAIL;
 const mThumbnail = process.env.M_THUMBNAIL;
 const musics = process.env.MUSICS.split(' ');
@@ -286,18 +285,11 @@ const importIso = async function importIso() {
 async function loadData() {
   let itemData = [];
 
-  if (isMongo) {
-    const { data, viewSize } = await fetchViewsMongo(serverUrl, loadedViews);
-    loadedViews += viewSize;
-    hasMore = loadedViews < viewsCount;
-    itemData = data;
-  } else {
-    const { data, more, next } = await fetchViewsNotion(serverUrl, nextCursor);
-    loadedViews += data.length;
-    hasMore = more;
-    nextCursor = next;
-    itemData = data;
-  }
+  const { data, more, next } = await fetchViewsNotion(serverUrl, nextCursor);
+  loadedViews += data.length;
+  hasMore = more;
+  nextCursor = next;
+  itemData = data;
 
   appendItemComponent(itemData);
   await importIso();
@@ -337,12 +329,7 @@ audio.addEventListener('timeupdate', ({ target }) => {
 
   thumbnailComponent(imageSrc);
 
-  if (isMongo && !fetchViewsMongo) {
-    const { fetchViewsMongo: fetchMongo, fetchViewsCount } = await import('./lib/fetchMongo');
-
-    fetchViewsMongo = fetchMongo;
-    viewsCount = await fetchViewsCount(serverUrl);
-  } else if (!isMongo && !fetchViewsNotion) {
+  if (!fetchViewsNotion) {
     const { default: fetchNotion } = await import('./lib/fetchNotion');
 
     fetchViewsNotion = fetchNotion;

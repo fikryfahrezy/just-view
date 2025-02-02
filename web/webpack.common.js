@@ -36,8 +36,6 @@ module.exports = {
     }),
     new webpack.EnvironmentPlugin({
       CACHE_TIME: Date.now(),
-      IS_MONGO: process.env.IS_MONGO,
-      SERVER_MONGO: process.env.SERVER_MONGO,
       SERVER_NOTION: process.env.SERVER_NOTION,
       W_THUMBNAIL: process.env.W_THUMBNAIL,
       M_THUMBNAIL: process.env.M_THUBMAIL,
