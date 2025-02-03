@@ -9,83 +9,83 @@ importers:
   .:
     dependencies:
       isotope-layout:
-        specifier: ^3.0.6
+        specifier: 3.0.6
         version: 3.0.6
       lazysizes:
-        specifier: ^5.3.2
+        specifier: 5.3.2
         version: 5.3.2
     devDependencies:
       '@capacitor/android':
-        specifier: ^3.0.0
+        specifier: 3.0.0
         version: 3.0.0(@capacitor/core@3.0.0)
       '@capacitor/cli':
-        specifier: ^3.0.0
+        specifier: 3.0.0
         version: 3.0.0
       '@capacitor/core':
-        specifier: ^3.0.0
+        specifier: 3.0.0
         version: 3.0.0
       '@types/isotope-layout':
-        specifier: ^3.0.8
+        specifier: 3.0.8
         version: 3.0.8
       '@types/node':
-        specifier: ^22.13.0
+        specifier: 22.13.0
         version: 22.13.0
       css-loader:
-        specifier: ^5.2.0
+        specifier: 5.2.0
         version: 5.2.0(webpack@5.28.0(webpack-cli@4.5.0))
       dotenv:
-        specifier: ^8.2.0
+        specifier: 8.2.0
         version: 8.2.0
       html-loader:
-        specifier: ^2.1.2
+        specifier: 2.1.2
         version: 2.1.2(webpack@5.28.0(webpack-cli@4.5.0))
       html-webpack-plugin:
-        specifier: ^5.3.1
+        specifier: 5.3.1
         version: 5.3.1(webpack@5.28.0(webpack-cli@4.5.0))
       http-server:
-        specifier: ^0.12.3
+        specifier: 0.12.3
         version: 0.12.3
       prettier:
-        specifier: ^2.3.0
+        specifier: 2.3.0
         version: 2.3.0
       style-loader:
-        specifier: ^2.0.0
+        specifier: 2.0.0
         version: 2.0.0(webpack@5.28.0(webpack-cli@4.5.0))
       ts-loader:
-        specifier: ^9.2.2
+        specifier: 9.2.2
         version: 9.2.2(typescript@5.7.3)(webpack@5.28.0(webpack-cli@4.5.0))
       typescript:
-        specifier: ^5.7.3
+        specifier: 5.7.3
         version: 5.7.3
       webpack:
-        specifier: ^5.28.0
+        specifier: 5.28.0
         version: 5.28.0(webpack-cli@4.5.0)
       webpack-bundle-analyzer:
-        specifier: ^4.4.0
+        specifier: 4.4.0
         version: 4.4.0
       webpack-cli:
-        specifier: ^4.5.0
+        specifier: 4.5.0
         version: 4.5.0(webpack-bundle-analyzer@4.4.0)(webpack-dev-server@3.11.2)(webpack@5.28.0)
       webpack-dev-server:
-        specifier: ^3.11.2
+        specifier: 3.11.2
         version: 3.11.2(webpack-cli@4.5.0)(webpack@5.28.0)
       webpack-merge:
-        specifier: ^5.7.3
+        specifier: 5.7.3
         version: 5.7.3
       webpack-pwa-manifest:
-        specifier: ^4.3.0
+        specifier: 4.3.0
         version: 4.3.0
       workbox-core:
-        specifier: ^6.1.5
+        specifier: 6.1.5
         version: 6.1.5
       workbox-precaching:
-        specifier: ^6.1.5
+        specifier: 6.1.5
         version: 6.1.5
       workbox-routing:
-        specifier: ^6.1.5
+        specifier: 6.1.5
         version: 6.1.5
       workbox-webpack-plugin:
-        specifier: ^6.1.5
+        specifier: 6.1.5
         version: 6.1.5(webpack@5.28.0(webpack-cli@4.5.0))
 
 packages:
@@ -903,11 +903,6 @@ packages:
   acorn-walk@8.0.2:
     resolution: {integrity: sha512-+bpA9MJsHdZ4bgfDcpk0ozQyhhVct7rzOmO0s1IIr0AGGgKBljss8n2zp11rRP2wid5VGeh04CgeKzgat5/25A==}
     engines: {node: '>=0.4.0'}
-
-  acorn@8.1.0:
-    resolution: {integrity: sha512-LWCF/Wn0nfHOmJ9rzQApGnxnvgfROzGilS8936rqN/lfcYkY9MYZzdMqN+2NJ4SlTc+m5HiSa+kNfDtI64dwUA==}
-    engines: {node: '>=0.4.0'}
-    hasBin: true
 
   acorn@8.14.0:
     resolution: {integrity: sha512-cl669nCJTZBsL97OF4kUQm5g5hC2uihk0NxY3WENAC0TYdILVkAyHymAntgxGkl7K+t0cXIrH5siy5S4XkFycA==}
@@ -4693,8 +4688,6 @@ snapshots:
 
   acorn-walk@8.0.2: {}
 
-  acorn@8.1.0: {}
-
   acorn@8.14.0: {}
 
   ajv-errors@1.0.1(ajv@6.12.6):
@@ -7100,7 +7093,7 @@ snapshots:
 
   webpack-bundle-analyzer@4.4.0:
     dependencies:
-      acorn: 8.1.0
+      acorn: 8.14.0
       acorn-walk: 8.0.2
       chalk: 4.1.0
       commander: 6.2.1
@@ -7218,7 +7211,7 @@ snapshots:
       '@webassemblyjs/ast': 1.11.0
       '@webassemblyjs/wasm-edit': 1.11.0
       '@webassemblyjs/wasm-parser': 1.11.0
-      acorn: 8.1.0
+      acorn: 8.14.0
       browserslist: 4.16.6
       chrome-trace-event: 1.0.2
       enhanced-resolve: 5.8.2

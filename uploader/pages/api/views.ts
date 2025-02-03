@@ -279,7 +279,7 @@ const musicsQuery = async function viewsQuery(startCursor: string | undefined = 
 const upload = function upload(req: NextApiRequest, type: 'music' | 'view') {
   return new Promise<boolean>((resolve, reject) => {
     const pass = new PassThrough();
-    const buffers: Uint8Array<ArrayBufferLike>[] = [];
+    const buffers: Uint8Array[] = [];
     const maxFileSize = 1 * 1024 * 1024;
     const form = new IncomingForm({ maxFileSize });
     let bufferLength = 0;

@@ -1,10 +1,17 @@
 FROM node:22.9.0-bookworm AS base
+ENV PNPM_HOME="/pnpm"
+ENV PATH="$PNPM_HOME:$PATH"
+# https://github.com/pnpm/pnpm/issues/9029
+# https://github.com/nodejs/corepack/issues/612
+RUN npm install -g corepack@latest
+RUN corepack enable pnpm
 
 # Build app
 FROM base AS builder
 WORKDIR /app
-COPY package*.json yarn.lock* ./
-RUN corepack enable pnpm && pnpm i --frozen-lockfile
+COPY package*.json pnpm-lock.yaml* ./
+
+RUN pnpm i --frozen-lockfile
 COPY . .
 RUN npm run build
 
@@ -12,7 +19,7 @@ RUN npm run build
 FROM base AS installer
 WORKDIR /app
 COPY package*.json pnpm-lock.yaml* ./
-RUN corepack enable pnpm && pnpm i --frozen-lockfile --production
+RUN pnpm i --frozen-lockfile --production
 
 # Run app
 FROM base AS runner
