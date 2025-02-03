@@ -10,7 +10,6 @@ RUN corepack enable pnpm
 FROM base AS builder
 WORKDIR /app
 COPY package*.json pnpm-lock.yaml* ./
-
 RUN pnpm i --frozen-lockfile
 COPY . .
 RUN npm run build
