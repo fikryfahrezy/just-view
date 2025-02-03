@@ -1,14 +1,7 @@
-import type { FormEvent } from 'react';
-import type { GetServerSideProps } from 'next';
-import type { UseFormReturn } from 'react-hook-form';
-import { useState } from 'react';
-import Router from 'next/router';
-import Head from 'next/head';
-import Image from 'next/image';
 import {
   Alert,
-  AlertIcon,
   AlertDescription,
+  AlertIcon,
   Button,
   CloseButton,
   Container,
@@ -21,13 +14,19 @@ import {
   Spinner,
   Stack,
   Tab,
-  Tabs,
   TabList,
   TabPanel,
   TabPanels,
+  Tabs,
   Text,
   useToast,
 } from '@chakra-ui/react';
+import type { GetServerSideProps } from 'next';
+import Head from 'next/head';
+import Image from 'next/image';
+import Router from 'next/router';
+import { useState } from 'react';
+import type { UseFormReturn } from 'react-hook-form';
 import { FormProvider, useForm, useFormContext } from 'react-hook-form';
 import styles from '../styles/Home.module.css';
 
@@ -65,9 +64,16 @@ const MediaLink = function MediaLink() {
 
   return (
     <ConnectForm>
-      {({ register, formState: { errors } }) => (
+      {({ register, reset, getValues, formState: { errors } }) => (
         <>
-          <RadioGroup onChange={setInput} value={input} mb='15px'>
+          <RadioGroup
+            onChange={(nextValue) => {
+              reset({ ...getValues(), file: undefined });
+              setInput(nextValue);
+            }}
+            value={input}
+            mb='15px'
+          >
             <Stack direction='row'>
               <Radio value='file'>File</Radio>
               <Radio value='url'>URL</Radio>
@@ -316,7 +322,7 @@ export default function Home() {
         display='flex'
         minHeight='100vh'
         maxWidth='100vw'
-        padding='0 0.5rem'
+        padding='0.5rem'
         justifyContent='center'
         alignItems='center'
         flexDirection='column'
@@ -367,10 +373,10 @@ export default function Home() {
 }
 
 export const getServerSideProps: GetServerSideProps = async ({ req }) => {
-  const { gigler } = req.cookies;
+  const { auth } = req.cookies;
   const cookieVal = process.env.COOKIE_VAL;
 
-  if (!gigler || gigler.split('').reverse().join('') !== cookieVal) {
+  if (!auth || auth.split('').reverse().join('') !== cookieVal) {
     return {
       redirect: {
         destination: '/',

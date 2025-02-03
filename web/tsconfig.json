@@ -10,7 +10,7 @@
     "module": "CommonJS",
     "target": "es5",
     "jsx": "react",
-    "lib": ["DOM", "WebWorker"],
+    "lib": ["DOM", "WebWorker", "ES2015"],
     "allowJs": true,
     "moduleResolution": "node"
   }

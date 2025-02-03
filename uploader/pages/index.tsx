@@ -1,8 +1,3 @@
-import type { GetServerSideProps } from 'next';
-import { useState } from 'react';
-import Router from 'next/router';
-import Head from 'next/head';
-import Image from 'next/image';
 import {
   Button,
   Container,
@@ -15,7 +10,12 @@ import {
   Text,
   useToast,
 } from '@chakra-ui/react';
-import { useForm, SubmitHandler } from 'react-hook-form';
+import type { GetServerSideProps } from 'next';
+import Head from 'next/head';
+import Image from 'next/image';
+import Router from 'next/router';
+import { useState } from 'react';
+import { SubmitHandler, useForm } from 'react-hook-form';
 import styles from '../styles/Home.module.css';
 
 type FormInputs = {
@@ -142,9 +142,9 @@ export default function Home() {
 }
 
 export const getServerSideProps: GetServerSideProps = async ({ req }) => {
-  const { gigler } = req.cookies;
+  const { auth } = req.cookies;
 
-  if (gigler) {
+  if (auth) {
     return {
       redirect: {
         destination: '/form',

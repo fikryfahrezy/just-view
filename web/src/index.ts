@@ -1,14 +1,9 @@
-import type {
-  ItemComponentData,
-  ModalComponentData,
-  FetchViewMongo,
-  FetchViewNotion,
-} from './type';
 import 'lazysizes';
 import 'lazysizes/plugins/blur-up/ls.blur-up';
 import 'lazysizes/plugins/object-fit/ls.object-fit';
 import 'lazysizes/plugins/parent-fit/ls.parent-fit';
 import './styles.css';
+import type { FetchClient, ItemComponentData, ModalComponentData } from './type';
 
 const cacheVersion = 1;
 const cachePrefix = 'just-view';
@@ -34,9 +29,7 @@ const isCacheAvailable = 'caches' in window;
 let observer = null;
 let iso: Isotope | null = null;
 let musicList: Blob[] = [];
-let fetchViewsMongo: FetchViewMongo | null = null;
-let fetchViewsNotion: FetchViewNotion | null = null;
-let viewsCount = 0;
+let fetchClient: FetchClient | null = null;
 let loadedViews = 0;
 let musicStartIndex = 0;
 let isFetching = false;
@@ -285,7 +278,7 @@ const importIso = async function importIso() {
 async function loadData() {
   let itemData = [];
 
-  const { data, more, next } = await fetchViewsNotion(serverUrl, nextCursor);
+  const { data, more, next } = await fetchClient(serverUrl, nextCursor);
   loadedViews += data.length;
   hasMore = more;
   nextCursor = next;
@@ -329,10 +322,9 @@ audio.addEventListener('timeupdate', ({ target }) => {
 
   thumbnailComponent(imageSrc);
 
-  if (!fetchViewsNotion) {
+  if (!fetchClient) {
     const { default: fetchNotion } = await import('./lib/fetchNotion');
-
-    fetchViewsNotion = fetchNotion;
+    fetchClient = fetchNotion;
   }
 
   setProgress(0);

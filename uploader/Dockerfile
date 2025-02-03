@@ -3,16 +3,16 @@ FROM node:22.9.0-bookworm AS base
 # Build app
 FROM base AS builder
 WORKDIR /app
-COPY package*.json yarn.lock* ./
-RUN yarn install --frozen-lockfile
+COPY package*.json pnpm-lock.yaml* ./
+RUN corepack enable pnpm && pnpm i --frozen-lockfile
 COPY . .
 RUN npm run build
 
 # Install production only dependencies
 FROM base AS installer
 WORKDIR /app
-COPY package*.json yarn.lock* ./
-RUN yarn install --frozen-lockfile --production
+COPY package*.json pnpm-lock.yaml* ./
+RUN corepack enable pnpm && pnpm i --frozen-lockfile --production
 
 # Run app
 FROM base AS runner

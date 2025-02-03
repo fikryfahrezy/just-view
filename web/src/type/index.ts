@@ -28,14 +28,7 @@ export type NotionResponseData = {
   };
 };
 
-export type FetchViewsCount = (serverUrl: string) => Promise<number>;
-
-export type FetchViewMongo = (
-  serverUrl: string,
-  start: number,
-) => Promise<{ data: ItemComponentData[]; viewSize: number }>;
-
-export type FetchViewNotion = (
+export type FetchClient = (
   serverUrl: string,
   start?: string,
 ) => Promise<{ data: ItemComponentData[]; more: boolean; next: string | null }>;

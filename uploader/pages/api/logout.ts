@@ -11,7 +11,7 @@ export default (req: NextApiRequest, res: NextApiResponse) => {
   const isProd = process.env.NODE_ENV === 'production';
 
   res
-    .setHeader('Set-Cookie', `gigler=''; Path=/; Max-Age=0; Secure=${isProd} HttpOnly=${isProd} `)
+    .setHeader('Set-Cookie', `auth=''; Path=/; Max-Age=0; Secure=${isProd} HttpOnly=${isProd} `)
     .status(200)
     .send('success');
 };

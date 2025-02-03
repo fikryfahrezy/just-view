@@ -1,6 +1,0 @@
-[build]
-  publish = "src/"
-
-[functions]
-  directory = "functions/"
-  external_node_modules = ["busboy", "@notionhq/client"] 

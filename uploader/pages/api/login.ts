@@ -27,7 +27,7 @@ export default (req: NextApiRequest, res: NextApiResponse) => {
   res
     .setHeader(
       'Set-Cookie',
-      `gigler=${cookieVal
+      `auth=${cookieVal
         ?.split('')
         .reverse()
         .join('')}; Path=/; Max-Age=86400; Secure=${isProd} HttpOnly=${isProd} `,

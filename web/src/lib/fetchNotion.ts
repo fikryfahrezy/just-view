@@ -1,13 +1,13 @@
 import type {
-  FetchViewNotion,
+  FetchClient,
   ItemComponentData,
   ItemMainData,
   ModalComponentData,
   NotionResponseData,
 } from '../type';
 
-const fetchViewsNotion: FetchViewNotion = async function fetViews(serverUrl, start = undefined) {
-  const url = `${serverUrl}/.netlify/functions/views?t=view${start ? `&s=${start}` : ''}`;
+const fetchNotion: FetchClient = async function fetViews(serverUrl, start = undefined) {
+  const url = `${serverUrl}/api/views?t=view${start ? `&s=${start}` : ''}`;
 
   try {
     const res = await fetch(url);
@@ -45,4 +45,4 @@ const fetchViewsNotion: FetchViewNotion = async function fetViews(serverUrl, sta
   }
 };
 
-export default fetchViewsNotion;
+export default fetchNotion;
