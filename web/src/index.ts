@@ -28,6 +28,7 @@ const isCacheAvailable = 'caches' in window;
 
 let observer = null;
 let iso: Isotope | null = null;
+let isMusicPlaying = false;
 let musicList: Blob[] = [];
 let fetchClient: FetchClient | null = null;
 let loadedViews = 0;
@@ -221,15 +222,13 @@ const itemComponent = function itemComponent({ main, detail }: ItemComponentData
 };
 
 const audioButtonComponent = function audioButtonComponent() {
-  let isPlaying = false;
-
   const button = document.createElement('button');
   const icon = document.createElement('i');
   button.appendChild(icon);
   icon.classList.add('fas', 'fa-play');
 
   button.addEventListener('click', () => {
-    if (!isPlaying) {
+    if (!isMusicPlaying) {
       audio.play();
       icon.classList.add('fa-pause');
       icon.classList.remove('fa-play');
@@ -239,7 +238,7 @@ const audioButtonComponent = function audioButtonComponent() {
       icon.classList.remove('fa-pause');
     }
 
-    isPlaying = !isPlaying;
+    isMusicPlaying = !isMusicPlaying;
   });
 
   return button;
@@ -291,6 +290,7 @@ async function loadData() {
 scrollButton.addEventListener('click', () => {
   grid.scrollIntoView({ behavior: 'smooth' });
   audio.play();
+  isMusicPlaying = true;
 });
 
 audio.addEventListener('timeupdate', ({ target }) => {
