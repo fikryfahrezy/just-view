@@ -246,11 +246,11 @@ const audioButtonComponent = function audioButtonComponent() {
 };
 
 const showHideAudioContoller = function showHideAudioContoller(isIntersecting: boolean) {
-  const acClasses = audioContainer.classList;
-  const targetClass = 'hide-container';
-
-  if (isIntersecting && acClasses.contains(targetClass)) acClasses.remove(targetClass);
-  else if (!acClasses.contains(targetClass)) acClasses.add(targetClass);
+  // const acClasses = audioContainer.classList;
+  // const targetClass = 'hide-container';
+  //
+  // if (isIntersecting && acClasses.contains(targetClass)) acClasses.remove(targetClass);
+  // else if (!acClasses.contains(targetClass)) acClasses.add(targetClass);
 };
 
 const appendItemComponent = function appendItemComponent(itemData: ItemComponentData[]) {
@@ -290,6 +290,7 @@ async function loadData() {
 
 scrollButton.addEventListener('click', () => {
   grid.scrollIntoView({ behavior: 'smooth' });
+  audio.play();
 });
 
 audio.addEventListener('timeupdate', ({ target }) => {
