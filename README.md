@@ -6,4 +6,4 @@
 
 # Just View
 
-Images gallery of nature scenery.
+Natural scenery image gallery.
