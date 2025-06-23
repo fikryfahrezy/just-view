@@ -1,4 +1,4 @@
-type ViewData = {
+export type ViewData = {
   name: string;
   image: string;
   low_image: string;
@@ -10,25 +10,38 @@ type ViewData = {
   lng: number;
 };
 
-export type ItemMainData = Pick<ViewData, 'name' | 'image' | 'low_image' | 'height' | 'width'>;
+export type MusicData = {
+  title: string;
+  author: string;
+  url: string;
+  copyright: string;
+}
 
-export type ModalComponentData = Pick<ViewData, 'name' | 'source' | 'source_link' | 'lat' | 'lng'>;
+export type ViewMainData = Pick<ViewData, 'name' | 'image' | 'low_image' | 'height' | 'width'>;
 
-export type ItemComponentData = {
-  main: ItemMainData;
-  detail: ModalComponentData;
+export type ViewDetailData = Pick<ViewData, 'name' | 'source' | 'source_link' | 'lat' | 'lng'>;
+
+export type ViewComponentData = {
+  main: ViewMainData;
+  detail: ViewDetailData;
 };
 
-export type NotionResponseData = {
+export type NotionResponseData<TData> = {
   message: string;
   data: {
-    result: ViewData[];
+    result: TData;
     has_more: boolean;
     next_cursor: string;
   };
 };
 
-export type FetchClient = (
+export type FetchClient<TData> = (
   serverUrl: string,
   start?: string,
-) => Promise<{ data: ItemComponentData[]; more: boolean; next: string | null }>;
+) => Promise<{ data: TData; more: boolean; next: string | null }>;
+
+export type FetchState = {
+  isFetching: boolean;
+  hasMore: boolean;
+  nextCursor: string |null
+}

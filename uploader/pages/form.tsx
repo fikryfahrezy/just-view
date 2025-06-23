@@ -113,20 +113,27 @@ const MediaLink = function MediaLink() {
 };
 
 type ImageFormProps = {
-  onSubmit: (url: string) => (data: SubmitType) => void;
+  onSubmit: (url: string) => (data: SubmitType) => Promise<void>;
 };
 
-const ImageForm = function ImageForm({ onSubmit }: ImageFormProps) {
+const ImageForm = function ImageForm({ onSubmit: onSubmitProps }: ImageFormProps) {
   const methods = useForm<ImageFormInputs>();
   const {
     register,
     formState: { errors },
     handleSubmit,
+    reset,
   } = methods;
+
+  const onSubmit = handleSubmit(async (data) => {
+    const submit = onSubmitProps('/api/notion?q=view')
+    await submit(data)
+    reset()
+  })
 
   return (
     <FormProvider {...methods}>
-      <form onSubmit={handleSubmit(onSubmit('/api/views?q=view'))}>
+      <form onSubmit={onSubmit}>
         <label htmlFor='name'>Name</label>
         <Input
           {...register('name', { required: true })}
@@ -189,7 +196,7 @@ const ImageForm = function ImageForm({ onSubmit }: ImageFormProps) {
 };
 
 type MusicFormProps = {
-  onSubmit: (url: string) => (data: SubmitType) => void;
+  onSubmit: (url: string) => (data: SubmitType) => Promise<void>;
 };
 
 type MusicFormInputs = {
@@ -199,17 +206,24 @@ type MusicFormInputs = {
   file: FileList;
 };
 
-const MusicForm = function MusicForm({ onSubmit }: MusicFormProps) {
+const MusicForm = function MusicForm({ onSubmit: onSubmitProps }: MusicFormProps) {
   const methods = useForm<MusicFormInputs>();
   const {
     formState: { errors },
     handleSubmit,
     register,
+    reset,
   } = methods;
+
+  const onSubmit = handleSubmit(async (data) => {
+    const submit = onSubmitProps('/api/notion?q=music')
+    await submit(data)
+    reset()
+  })
 
   return (
     <FormProvider {...methods}>
-      <form onSubmit={handleSubmit(onSubmit('/api/views?q=music'))}>
+      <form onSubmit={onSubmit}></form>
         <label htmlFor='title'>Title</label>
         <Input
           {...register('title', { required: true })}
@@ -268,7 +282,7 @@ export default function Home() {
   const toast = useToast();
 
   const onSubmit = function onSubmit(url: string) {
-    return (data: SubmitType) => {
+    return async (data: SubmitType) => {
       const form = new FormData();
 
       Object.entries(data).forEach(([key, value]) => {
@@ -277,31 +291,30 @@ export default function Home() {
       });
 
       isLoading(true);
-      fetch(url, {
-        method: 'POST',
-        body: form,
-      })
-        .then((res) => res.json())
-        .then((res: FetchType) => {
-          if (!res.success) throw new Error(res.message);
-          toast({
-            title: 'success',
-            status: 'success',
-            duration: 3000,
-            isClosable: true,
-          });
+
+      try {
+        const res = await fetch(url, {
+          method: 'POST',
+          body: form,
         })
-        .catch(() => {
-          toast({
-            title: 'fail',
-            status: 'error',
-            duration: 3000,
-            isClosable: true,
-          });
-        })
-        .finally(() => {
-          isLoading(false);
+        const json = await res.json() as FetchType
+        if (!json.success) throw new Error(json.message);
+         toast({
+           title: 'success',
+           status: 'success',
+           duration: 3000,
+           isClosable: true,
+         });
+      } catch {
+        toast({
+          title: 'fail',
+          status: 'error',
+          duration: 3000,
+          isClosable: true,
         });
+      }
+
+      isLoading(false);
     };
   };
 

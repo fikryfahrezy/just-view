@@ -426,7 +426,7 @@ const handler = async function handler(req: NextApiRequest, res: NextApiResponse
     const { q, s, t } = req.query;
     if (req.method === 'POST' && q) {
       await upload(req, q === 'music' ? 'music' : 'view');
-      res.status(200).json({ success: true, message: 'success' });
+      return res.status(200).json({ success: true, message: 'success' });
     }
 
     // Set CORS headers
@@ -439,11 +439,11 @@ const handler = async function handler(req: NextApiRequest, res: NextApiResponse
       return res.status(200).end();
     }
 
-    const viewData = await (t?.toString().toLowerCase() === 'music'
+    const data = await (t?.toString().toLowerCase() === 'music'
       ? musicsQuery(s?.toString())
       : viewsQuery(s?.toString()));
 
-    res.status(200).json({ success: true, message: 'success', data: viewData });
+    return res.status(200).json({ success: true, message: 'success', data: data });
   } catch (e) {
     res.status(400).json({ success: false, message: 'fail' });
   }

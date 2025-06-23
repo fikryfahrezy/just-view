@@ -1,29 +1,31 @@
 import type {
-  FetchClient,
-  ItemComponentData,
-  ItemMainData,
-  ModalComponentData,
-  NotionResponseData,
+    FetchClient,
+    ViewComponentData,
+    ViewMainData,
+    ViewDetailData,
+    NotionResponseData,
+    ViewData,
+    MusicData,
 } from '../type';
 
-const fetchNotion: FetchClient = async function fetViews(serverUrl, start = undefined) {
-  const url = `${serverUrl}/api/views?t=view${start ? `&s=${start}` : ''}`;
+export const fetchViews: FetchClient<ViewComponentData[]> = async (serverUrl, start = undefined) => {
+  const url = `${serverUrl}/api/notion?t=view${start ? `&s=${start}` : ''}`;
 
   try {
     const res = await fetch(url);
-    const { data } = await (res.json() as Promise<NotionResponseData>);
+    const { data } = await (res.json() as Promise<NotionResponseData<ViewData[]>>);
     const { result, has_more, next_cursor } = data;
 
-    const items: ItemComponentData[] = result.map(
+    const items: ViewComponentData[] = result.map(
       ({ name, image, low_image, source, source_link, height, width, lat, lng }) => {
-        const main: ItemMainData = {
+        const main: ViewMainData = {
           name,
           width,
           height,
           image,
           low_image,
         };
-        const detail: ModalComponentData = {
+        const detail: ViewDetailData = {
           name,
           source,
           source_link,
@@ -45,4 +47,17 @@ const fetchNotion: FetchClient = async function fetViews(serverUrl, start = unde
   }
 };
 
-export default fetchNotion;
+export const fetchMusics: FetchClient<MusicData[]> = async (serverUrl, start = undefined) => {
+  const url = `${serverUrl}/api/notion?t=music${start ? `&s=${start}` : ''}`;
+
+  try {
+    const res = await fetch(url);
+    const { data } = await (res.json() as Promise<NotionResponseData<MusicData[]>>);
+    const { result, has_more, next_cursor } = data;
+
+    return { data: result, more: has_more, next: next_cursor };
+  } catch (err) {
+    console.log(err);
+    return { data: [], more: false, next: null };
+  }
+};

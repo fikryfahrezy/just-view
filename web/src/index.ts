@@ -3,7 +3,8 @@ import 'lazysizes/plugins/blur-up/ls.blur-up';
 import 'lazysizes/plugins/object-fit/ls.object-fit';
 import 'lazysizes/plugins/parent-fit/ls.parent-fit';
 import './styles.css';
-import type { FetchClient, ItemComponentData, ModalComponentData } from './type';
+import type { FetchState, ViewComponentData, ViewDetailData } from './type';
+import { fetchMusics, fetchViews } from './lib/fetchNotion';
 
 const cacheVersion = 1;
 const cachePrefix = 'just-view';
@@ -11,7 +12,6 @@ const cacheName = `${cachePrefix}-${cacheVersion}-${process.env.CACHE_TIME}`;
 const serverUrl = process.env.SERVER_NOTION;
 const wThumbnail = process.env.W_THUMBNAIL;
 const mThumbnail = process.env.M_THUMBNAIL;
-const musics = process.env.MUSICS.split(' ');
 
 // https://stackoverflow.com/questions/3514784/what-is-the-best-way-to-detect-a-mobile-device
 const isMobile = /Android|webOS|iPhone|iPod|BlackBerry|IEMobile/i.test(navigator.userAgent);
@@ -20,7 +20,6 @@ const scrollButton = document.getElementById('scroll-button');
 const loadMore = document.getElementById('load-more');
 const thumbnail = document.getElementById('thumbnail');
 const main = document.getElementById('main');
-const audioContainer = document.getElementById('audio-container');
 const audio = document.getElementById('audio') as HTMLAudioElement;
 const circle = document.getElementById('progress') as unknown as SVGCircleElement;
 const percentController = document.getElementById('percent-contoller');
@@ -28,14 +27,22 @@ const isCacheAvailable = 'caches' in window;
 
 let observer = null;
 let iso: Isotope | null = null;
+
+let musicList: string[] = [];
 let isMusicPlaying = false;
-let musicList: Blob[] = [];
-let fetchClient: FetchClient | null = null;
-let loadedViews = 0;
 let musicStartIndex = 0;
-let isFetching = false;
-let hasMore = true;
-let nextCursor: string | null = null;
+
+const viewsServerState: FetchState = {
+  isFetching : false,
+  hasMore :true,
+  nextCursor: null,
+}
+
+const musicServerState: FetchState = {
+  isFetching : false,
+  hasMore :true,
+  nextCursor: null,
+}
 
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
@@ -82,6 +89,10 @@ async function getCachedData(cacheName: string) {
  */
 // Try to get data from the cache, but fall back to fetching it live.
 async function getData(urls: string[]) {
+  if (!isCacheAvailable) {
+    return null
+  }
+
   let cachedData = await getCachedData(cacheName);
 
   if (cachedData) {
@@ -113,17 +124,22 @@ const setProgress = function setProgress(percent: number) {
   circle.style.strokeDashoffset = String(offset);
 };
 
-const loadAudio = function loadAudio(srcBlob: Blob) {
+const loadAudio = function loadAudio(src: Blob | string) {
+  if (typeof src === 'string') {
+    audio.src = src;
+    audio.loop = true;
+    return
+  }
+
   const fr = new FileReader();
   fr.onload = function onLoad(e) {
     const result = e.target.result;
     if (typeof result === 'string') audio.src = result;
 
     audio.loop = true;
-    audio.innerHTML = 'Your browser does not support the <code>audio</code> element.';
   };
 
-  fr.readAsDataURL(srcBlob);
+  fr.readAsDataURL(src);
 };
 
 const thumbnailComponent = function thumbnailComponent(imageSrc: string) {
@@ -150,7 +166,7 @@ const modalComponent = function modalComponent({
   source_link,
   lat,
   lng,
-}: ModalComponentData) {
+}: ViewDetailData) {
   const descDiv = document.createElement('div');
   descDiv.classList.add('modal');
 
@@ -179,7 +195,7 @@ const modalComponent = function modalComponent({
   return descDiv;
 };
 
-const itemComponent = function itemComponent({ main, detail }: ItemComponentData) {
+const itemComponent = function itemComponent({ main, detail }: ViewComponentData) {
   const { name, image, low_image, height, width } = main;
 
   const item = document.createElement('div');
@@ -252,7 +268,7 @@ const showHideAudioContoller = function showHideAudioContoller(isIntersecting: b
   // else if (!acClasses.contains(targetClass)) acClasses.add(targetClass);
 };
 
-const appendItemComponent = function appendItemComponent(itemData: ItemComponentData[]) {
+const appendItemComponent = function appendItemComponent(itemData: ViewComponentData[]) {
   itemData.forEach((val) => {
     const itemComp = itemComponent(val);
     grid.appendChild(itemComp);
@@ -274,17 +290,35 @@ const importIso = async function importIso() {
   }
 };
 
-async function loadData() {
-  let itemData = [];
+async function loadViews() {
+  if (viewsServerState.isFetching || !viewsServerState.hasMore) {
+    return
+  }
 
-  const { data, more, next } = await fetchClient(serverUrl, nextCursor);
-  loadedViews += data.length;
-  hasMore = more;
-  nextCursor = next;
-  itemData = data;
+  viewsServerState.isFetching = true;
 
-  appendItemComponent(itemData);
-  await importIso();
+  const { data, more, next } = await fetchViews(serverUrl, viewsServerState.nextCursor);
+  viewsServerState.hasMore = more;
+  viewsServerState.nextCursor = next;
+
+  appendItemComponent(data);
+  viewsServerState.isFetching = false;
+}
+
+async function loadMusics() {
+  musicServerState.isFetching = true;
+
+  const { data, more, next } = await fetchMusics(serverUrl, musicServerState.nextCursor);
+  musicServerState.hasMore = more;
+  musicServerState.nextCursor = next;
+
+  musicList = data.map((music) => music.url)
+  musicServerState.isFetching = false;
+}
+
+async function setupMusic() {
+  loadAudio(musicList[musicStartIndex]);
+  percentController.appendChild(audioButtonComponent());
 }
 
 scrollButton.addEventListener('click', () => {
@@ -300,46 +334,34 @@ audio.addEventListener('timeupdate', ({ target }) => {
 });
 
 (async function init() {
-  const urls = [wThumbnail, mThumbnail, ...musics];
+  const urls = [wThumbnail, mThumbnail];
   let imageSrc = !isMobile ? wThumbnail : mThumbnail;
 
-  if (isCacheAvailable) {
-    const [wThumbnail, mThumbnail, ...musics] = await getData(urls);
-
+  const cachedData = await getData(urls);
+  if (cachedData) {
+    const [wThumbnail, mThumbnail] = cachedData
     // https://developer.mozilla.org/en-US/docs/Web/API/URL/createObjectURL
-    const imageBlog = URL.createObjectURL(
-      !isMobile ? await wThumbnail.blob() : await mThumbnail.blob(),
+    const imageBlob = URL.createObjectURL(
+      await (isMobile ? mThumbnail : wThumbnail).blob(),
     );
-
-    imageSrc = imageBlog;
-
-    Promise.all(musics.map((music) => music.blob()))
-      .then((musics) => (musicList = musics))
-      .then(() => {
-        loadAudio(musicList[musicStartIndex]);
-        percentController.appendChild(audioButtonComponent());
-      });
+    imageSrc = imageBlob;
   }
 
   thumbnailComponent(imageSrc);
 
-  if (!fetchClient) {
-    const { default: fetchNotion } = await import('./lib/fetchNotion');
-    fetchClient = fetchNotion;
-  }
-
   setProgress(0);
+  await loadViews()
+  await importIso();
+
+  await loadMusics();
+  await setupMusic();
 
   observer = new IntersectionObserver(
     (entries) => {
       entries.forEach(async ({ target, isIntersecting }) => {
         if (isIntersecting) {
-          if (target === loadMore && !isFetching && hasMore) {
-            isFetching = true;
-
-            await loadData();
-
-            isFetching = false;
+          if (target === loadMore) {
+            await loadViews();
           } else {
             showHideAudioContoller(target === thumbnail);
           }
