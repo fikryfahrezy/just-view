@@ -223,7 +223,7 @@ const MusicForm = function MusicForm({ onSubmit: onSubmitProps }: MusicFormProps
 
   return (
     <FormProvider {...methods}>
-      <form onSubmit={onSubmit}></form>
+      <form onSubmit={onSubmit}>
         <label htmlFor='title'>Title</label>
         <Input
           {...register('title', { required: true })}
