@@ -39,7 +39,6 @@ module.exports = {
       SERVER_NOTION: process.env.SERVER_NOTION,
       W_THUMBNAIL: process.env.W_THUMBNAIL,
       M_THUMBNAIL: process.env.M_THUBMAIL,
-      MUSICS: process.env.MUSICS,
     }),
   ],
   output: {
