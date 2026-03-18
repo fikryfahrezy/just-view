@@ -31,4 +31,7 @@ ARG PORT=3000
 EXPOSE ${PORT}
 ENV PORT=${PORT}
 
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+    CMD curl -f http://localhost:${PORT}/ || exit 1
+
 CMD ["sh", "-c", "http-server dist -p ${PORT}"]

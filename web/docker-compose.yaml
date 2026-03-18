@@ -8,3 +8,8 @@ services:
     env_file:
       - path: ./.env
         required: true
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:${PORT}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
